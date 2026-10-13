@@ -21,7 +21,7 @@ class Media extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function mediable(): MorphTo
+    public function attachable(): MorphTo
     {
         return $this->morphTo();
     }

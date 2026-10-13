@@ -16,7 +16,7 @@ trait Attachable
 {
     public function media(): MorphMany
     {
-        return $this->morphMany(Media::class, 'mediable');
+        return $this->morphMany(Media::class, 'attachable');
     }
 
     public static function bootAttachable(): void

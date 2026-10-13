@@ -19,19 +19,6 @@ abstract class Model extends BaseModel
     use LogsActivity;
     use SoftDeletes;
 
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
-    protected static function booted(): void
-    {
-        static::creating(function (self $model): void {
-            if (!$model->getKey()) {
-                $model->{$model->getKeyName()} = (string) str()->ulid();
-            }
-        });
-    }
-
     /**
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
@@ -39,16 +26,6 @@ abstract class Model extends BaseModel
     {
         return [
             new \Illuminate\Broadcasting\PrivateChannel(sprintf('%s.%s', $this->getTable(), $this->getAttribute('uuid') ?? $this->getKey())),
-        ];
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'id' => 'string',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
         ];
     }
 }

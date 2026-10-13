@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('mime', 128)->nullable();
             $table->unsignedBigInteger('size')->default(0);
-            $table->nullableMorphs('mediable');
+            $table->nullableMorphs('attachable');
             $table->timestamps();
             $table->softDeletes();
             $table->index('created_at');
