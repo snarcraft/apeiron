@@ -13,12 +13,15 @@
   <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: cloudflare, aws · ship: swarm, ghcr, app stores · humans + agents" width="1200">
 </p>
 
-> **In active development** — conventions, generated code and docs evolve quickly; expect sharp edges between releases. Built by professionals, for professionals: if operating Docker Swarm, AWS and CI pipelines yourself is not your comfort zone, this is not yet for you.
+> [!WARNING]
+> **Apeiron is in active development.** Things change fast and may break between releases — nothing is stable yet.
+>
+> It is built **by professionals, for professionals**. You should be comfortable reading code and running your own infrastructure (Docker, AWS, CI). New to these? Wait for the stable release — it will be worth it.
 
 ---
 
 <p align="center">
-  <sub><em>·&nbsp;&nbsp;ἄ π ε ι ρ ο ν&nbsp;&nbsp;·</em></sub>
+  <sub><em>·&nbsp;&nbsp;A P E I R O N&nbsp;&nbsp;·</em></sub>
 </p>
 
 <p align="center">
