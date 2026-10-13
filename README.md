@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: aws, cloudflare · ship: swarm, ghcr, app stores · humans + ai agents" width="1200">
+  <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: cloudflare, aws · ship: swarm, ghcr, app stores · humans + agents" width="1200">
 </p>
 
 ---
@@ -45,7 +45,7 @@ You answer a handful of questions; a complete, deployed, branded platform answer
 | ⬡   | groups · roles · features | the entire RBAC layer as **code** — enums, gates, mirrored UI policies, seed personas, Pest spec                                                          |
 | ✦   | a hue (or _surprise me_)  | a gamut-mapped oklch palette, minted live in your terminal, driving every surface — same brand from landing page to mobile theme, served from the backend |
 | ●   | a design soul             | a distinct, beautiful website — same anatomy every time, a different face every project                                                                   |
-| ▲   | secrets (optional)        | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist                              |
+| ▲   | secrets                   | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist                              |
 
 <p align="center">
   <img src="docs/flow.svg" alt="One command to a full platform" width="1200">
@@ -150,7 +150,7 @@ An agent that has never seen your project can add a feature end-to-end by readin
 ## ▲ Quickstart
 
 ```bash
-git clone <this repo> && cd apeiron
+git clone https://github.com/snarcraft/apeiron.git && cd apeiron
 
 node .                                 # interactive — palette preview in your terminal
 node . --list-souls                    # meet the four souls

@@ -59,8 +59,4 @@
       <text x="600" y="252" text-anchor="middle" class="dim">pest — the shared truth · mcp — live docs</text></g>
   </g>
 
-  <!-- verdict -->
-  <path class="flow t" d="M420,218 C360,226 330,250 262,258"/>
-  <text x="145" y="252" text-anchor="middle" class="dim">byte-identical commits</text>
-  <text x="145" y="270" text-anchor="middle" class="dim">same suite green</text>
 </svg>

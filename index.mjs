@@ -182,18 +182,16 @@ async function ask() {
 
   title('Integrations')
   note('Stripe · Reverb · S3 media · Discord · Laravel AI — the full platform ships always, no toggles.')
+  note('Secrets are asked, never optional — enter to keep the placeholder for any you do not have yet.')
   a.secrets = {}
-  const wantsSecrets = await confirm({ label: 'Enter secret values now? (else placeholders)', default: false })
-  if (wantsSecrets) {
-    const keys = [
-      'STRIPE_KEY', 'STRIPE_SECRET', 'STRIPE_WEBHOOK_SECRET',
-      'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY',
-      'DISCORD_CONTACT_WEBHOOK_URL', 'DISCORD_USER_ID',
-      'CF_DNS_API_TOKEN', 'DB_PASSWORD', 'REDIS_PASSWORD',
-    ]
-    for (const key of keys) {
-      a.secrets[key] = await secret({ label: key })
-    }
+  const keys = [
+    'STRIPE_KEY', 'STRIPE_SECRET', 'STRIPE_WEBHOOK_SECRET',
+    'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY',
+    'DISCORD_CONTACT_WEBHOOK_URL', 'DISCORD_USER_ID',
+    'CF_DNS_API_TOKEN', 'DB_PASSWORD', 'REDIS_PASSWORD',
+  ]
+  for (const key of keys) {
+    a.secrets[key] = await secret({ label: key })
   }
 
   a.gitInit = await confirm({ label: 'git init the project?', default: true })
