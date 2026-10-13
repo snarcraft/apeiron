@@ -14,9 +14,7 @@
 </p>
 
 > [!WARNING]
-> **Apeiron is in active development.** Things change fast and may break between releases — nothing is stable yet.
->
-> It is built **by professionals, for professionals**. You should be comfortable reading code and running your own infrastructure (Docker, AWS, CI). New to these? Wait for the stable release — it will be worth it.
+> **In active development** — expect breaking changes between releases. Built for professionals who run their own infrastructure (Docker, AWS, CI); others should wait for the stable release.
 
 ---
 
