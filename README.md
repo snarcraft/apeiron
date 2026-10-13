@@ -117,7 +117,7 @@ Scaling is role-shaped, not instance-shaped: `docker service scale <stack>_backe
   <img src="docs/bill.svg" alt="Two monthly bills — the aws cluster stacks a control plane, managed nodes, a nat gateway and a load balancer for roughly 205 a month; ec2 plus swarm is one instance for roughly 40 a month, everything else zero" width="1200">
 </p>
 
-Vertical first — Octane keeps the app hot in memory with coroutine I/O, and Swarm packs replicas onto the instance edge to edge: one host does the work of a small fleet. Horizontal when you outgrow it: `docker swarm join` a second EC2 and the overlay network, placement and Traefik re-converge themselves; Horizon workers fit Spot instances perfectly, since Swarm reschedules a killed node's replicas. The honest trade: no autoscaler daemon — scaling is a command, or one line in the deploy pipeline, and a ~30-line watchdog on queue depth automates it the day you want that.
+Vertical first — Octane keeps the app hot in memory with coroutine I/O, and Swarm packs replicas onto the instance edge to edge: one host does the work of a small fleet. Horizontal when you outgrow it: `docker swarm join` a second EC2 and the overlay network, placement and Traefik re-converge themselves; Horizon workers fit Spot instances perfectly, since Swarm reschedules a killed node's replicas. And it is automatic: `autoscale.sh` runs on the host as a systemd unit, watches **Traefik's own request metrics**, and calls `docker service scale` — replicas rise the moment traffic does, and step back down only after three calm windows, so it never flaps. Bounds and sensitivity live in `/etc/apeiron/autoscale.env`.
 
 ## ⬡ Permissions are code
 

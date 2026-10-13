@@ -50,6 +50,7 @@ manual ────► "Swarm up" (every release)
 | `deploy.sh` | pull + migrate-as-job + stack roll + wait |
 | `docker.sh` | host bootstrap (docker, swarm init, cluster net) |
 | `infra.sh` | deploy the infra stack |
+| `autoscale.sh` | traefik rps → `docker service scale` (systemd) |
 
 ## Scaling
 
@@ -66,8 +67,13 @@ docker service scale {{APP_NAME}}_horizon=2    # queue workers
 - **Horizontal**: `docker swarm join` a second EC2 — overlay net,
   placement, traefik re-converge. Horizon fits **Spot**: swarm
   reschedules a killed node's replicas.
-- **No autoscaler daemon** by design: scale is a command or a
-  pipeline line; a small watchdog on queue depth / `docker stats`
-  automates it when needed.
+- **Autoscaling**: `autoscale.sh` (systemd `apeiron-autoscale`,
+  installed by `infra.sh`) reads traefik's prometheus metrics on
+  `:8082` and scales the `_backend` service on rps — up the
+  moment traffic rises, down after `DOWN_GRACE` calm windows.
+  Tune via `/etc/apeiron/autoscale.env`: `MIN_REPLICAS`,
+  `MAX_REPLICAS`, `RPS_PER_REPLICA`, `INTERVAL`, `DOWN_GRACE`.
+  Horizon scales on queue depth, not rps — keep it manual until
+  that watchdog lands.
 - Marketing + media never touch EC2 (S3/CDN), so compute scales
   only with the app.

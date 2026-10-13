@@ -17,6 +17,9 @@ services:
       - --entryPoints.web.http.redirections.entryPoint.to=secured
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --entryPoints.secured.address=:443
+      - --entryPoints.metrics.address=:8082
+      - --metrics.prometheus.entryPoint=metrics
+      - --metrics.prometheus.addServicesLabels=true
       - --certificatesResolvers.cloudflare.acme.email={{CONTACT_EMAIL}}
       - --certificatesResolvers.cloudflare.acme.storage=/letsencrypt/acme.json
       - --certificatesResolvers.cloudflare.acme.dnsChallenge.provider=cloudflare
@@ -27,6 +30,9 @@ services:
         mode: host
       - target: 443
         published: 443
+        mode: host
+      - target: 8082
+        published: 8082
         mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
