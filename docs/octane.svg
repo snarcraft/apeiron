@@ -12,7 +12,6 @@
       .track { stroke: #26224a; stroke-width: 2; }
       .hot { stroke: #988cff; stroke-width: 2; stroke-dasharray: 4 6; animation: dash 1s linear infinite; }
       .gate { fill: none; stroke: #9d97c9; stroke-width: 2; stroke-linecap: round; }
-      .spin { transform-origin: center; transform-box: fill-box; }
       @keyframes dash { to { stroke-dashoffset: -10; } }
     </style>
   </defs>
@@ -24,17 +23,14 @@
   <text x="40" y="104" class="dim">boots per request · php-fpm</text>
   <line x1="420" y1="92" x2="1090" y2="92" class="track"/>
 
-  <g class="spin"><circle cx="560" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
+  <g><circle cx="560" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
     <path class="gate" d="M560,82 A10,10 0 0 1 570,92"/>
-    <animateTransform attributeName="transform" type="rotate" from="0 560 92" to="360 560 92" dur="1s" repeatCount="indefinite"/>
   </g>
-  <g class="spin"><circle cx="760" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
+  <g><circle cx="760" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
     <path class="gate" d="M760,82 A10,10 0 0 1 770,92"/>
-    <animateTransform attributeName="transform" type="rotate" from="0 760 92" to="360 760 92" dur="1s" repeatCount="indefinite"/>
   </g>
-  <g class="spin"><circle cx="960" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
+  <g><circle cx="960" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
     <path class="gate" d="M960,82 A10,10 0 0 1 970,92"/>
-    <animateTransform attributeName="transform" type="rotate" from="0 960 92" to="360 960 92" dur="1s" repeatCount="indefinite"/>
   </g>
   <text x="560" y="128" text-anchor="middle" class="dim">boot</text>
   <text x="760" y="128" text-anchor="middle" class="dim">boot</text>
