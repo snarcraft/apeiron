@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="392" viewBox="0 0 1200 392" role="img" aria-label="Two monthly bills — the aws cluster stacks a control plane, managed nodes, a nat gateway and a load balancer for roughly 205 a month; ec2 plus swarm is one instance for roughly 40 a month, everything else zero">
+  <defs>
+    <linearGradient id="r-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#15132b"/>
+      <stop offset="100%" stop-color="#0d0c1e"/>
+    </linearGradient>
+    <style>
+      text { font-family: system-ui, -apple-system, sans-serif; fill: #e8e4ff; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+      .name { fill: #e8e4ff; }
+      .zero { fill: #00b4bf; }
+      .soft { fill: #9d97c9; }
+      .lbl { fill: #c4bcff; font-weight: 600; font-size: 11px; letter-spacing: .12em; }
+      .rule { stroke: #26224a; stroke-width: 1; stroke-dasharray: 3 5; }
+      .total { font-weight: 700; font-size: 15px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="392" rx="14" fill="url(#r-bg)" stroke="#26224a"/>
+
+  <!-- the aws cluster bill -->
+  <path fill="url(#r-bg)" stroke="#26224a" d="M80,30 H560 V341 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 Z"/>
+  <text x="320" y="62" text-anchor="middle" class="lbl">THE AWS CLUSTER</text>
+  <text x="320" y="80" text-anchor="middle" class="soft" font-size="10.5">per environment · every month · before the first request</text>
+  <line x1="112" y1="96" x2="528" y2="96" class="rule"/>
+  <text x="112" y="124" class="mono name">eks control plane</text>
+  <text x="528" y="124" text-anchor="end" class="mono name">$73</text>
+  <text x="112" y="154" class="mono name">managed node group</text>
+  <text x="528" y="154" text-anchor="end" class="mono name">$84</text>
+  <text x="112" y="184" class="mono name">nat gateway</text>
+  <text x="528" y="184" text-anchor="end" class="mono name">$32</text>
+  <text x="112" y="214" class="mono name">load balancer</text>
+  <text x="528" y="214" text-anchor="end" class="mono name">$16</text>
+  <text x="112" y="244" class="mono name">cross-az chatter</text>
+  <text x="528" y="244" text-anchor="end" class="mono soft">billed</text>
+  <text x="112" y="274" class="mono name">upgrades · iam upkeep</text>
+  <text x="528" y="274" text-anchor="end" class="mono soft">weekends</text>
+  <line x1="112" y1="294" x2="528" y2="294" class="rule"/>
+  <text x="112" y="322" class="mono total">total</text>
+  <text x="528" y="322" text-anchor="end" class="mono total">≈ $205 /mo</text>
+
+  <!-- the ec2 + swarm bill -->
+  <path fill="url(#r-bg)" stroke="#26224a" d="M640,30 H1120 V283 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 l-12,9 l-12,-9 Z"/>
+  <text x="880" y="62" text-anchor="middle" class="lbl">EC2 + SWARM</text>
+  <text x="880" y="80" text-anchor="middle" class="soft" font-size="10.5">same platform · one instance</text>
+  <line x1="672" y1="96" x2="1088" y2="96" class="rule"/>
+  <text x="672" y="124" class="mono name">one ec2 instance</text>
+  <text x="1088" y="124" text-anchor="end" class="mono name">≈ $40</text>
+  <text x="672" y="154" class="mono name">docker swarm</text>
+  <text x="1088" y="154" text-anchor="end" class="mono zero">$0</text>
+  <text x="672" y="184" class="mono name">traefik + tls (dns-01)</text>
+  <text x="1088" y="184" text-anchor="end" class="mono zero">$0</text>
+  <text x="672" y="214" class="mono name">cloudflare dns</text>
+  <text x="1088" y="214" text-anchor="end" class="mono zero">$0</text>
+  <line x1="672" y1="234" x2="1088" y2="234" class="rule"/>
+  <text x="672" y="262" class="mono total">total</text>
+  <text x="1088" y="262" text-anchor="end" class="mono total">≈ $40 /mo</text>
+  <text x="880" y="330" text-anchor="middle" class="soft" font-size="11.5">scaling costs a command, not a cluster</text>
+</svg>
