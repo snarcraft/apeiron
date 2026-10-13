@@ -2,6 +2,8 @@
   <img src="docs/banner.svg" alt="Apeiron — the boundless, source of platforms" width="1200">
 </p>
 
+<h1 align="center"> ἄ π ε ι ρ ο ν </h1>
+
 <p align="center">
   <em>An opinionated factory for full-stack businesses —<br>
   every project born complete, every line readable by humans and AI agents alike.</em>
@@ -37,23 +39,23 @@ Most templates give you a folder. **Apeiron gives you a worldview** — one deli
 
 You answer five questions. A complete, deployed, branded platform answers back.
 
-> **◈** *a name, a domain, an org*
+> **◈** _a name, a domain, an org_
 
 **Identity** — wired through the website, the webapp, mobile, the API and CI. Every surface knows who it is.
 
-> **⬡** *groups · roles · features*
+> **⬡** _groups · roles · features_
 
 **Permissions** — the whole RBAC layer as code: enums, gates, mirrored UI policies, seed personas, and a Pest spec that proves it.
 
-> **✦** *a hue — or “surprise me”*
+> **✦** _a hue — or “surprise me”_
 
 **A palette** — gamut-mapped oklch, minted live in your terminal, driving every surface from landing page to mobile theme. One brand, served from the backend.
 
-> **●** *a design soul*
+> **●** _a design soul_
 
 **A website** — the same anatomy every time, a different face every project. Hero to contact, restyled by the soul.
 
-> **▲** *secrets*
+> **▲** _secrets_
 
 **A cloud** — an idempotent AWS provisioner: buckets, IAM users, EC2 per environment, Cloudflare DNS — and a ready-to-run `gh` checklist for the day you go live.
 
