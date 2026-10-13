@@ -16,17 +16,21 @@
 ---
 
 <p align="center">
-  <img src="docs/apeiron.svg" alt="ἄπειρον — worlds arising from the boundless and returning to it" width="1200">
+  <sub><em>·&nbsp;&nbsp;ἄ π ε ι ρ ο ν&nbsp;&nbsp;·</em></sub>
 </p>
 
 <p align="center">
-  <sub><em>Anaximander, twenty-six centuries ago, named the immortal source</em></sub><br>
-  <sub><em>from which all worlds arise — and to which they return.</em></sub>
+  <em>Anaximander, twenty-six centuries ago, named the immortal source<br>
+  from which all worlds arise — and to which they return.</em>
 </p>
 
 <p align="center">
   <strong>This is that idea, as a repository:</strong><br>
   one boundless source, every platform you will ever build.
+</p>
+
+<p align="center">
+  <sub>◆&nbsp;&nbsp;✦&nbsp;&nbsp;⬡&nbsp;&nbsp;●&nbsp;&nbsp;▲</sub>
 </p>
 
 ## ◆ The concept
@@ -35,13 +39,13 @@ Most templates give you a folder. **Apeiron gives you a worldview.** It encodes 
 
 You answer a handful of questions; a complete, deployed, branded platform answers back:
 
-| | You are asked | You receive |
-|---|---|---|
-| ◈ | a name, a domain, an org | identity wired through web, webapp, mobile, API, CI |
-| ⬡ | groups · roles · features | the entire RBAC layer as **code** — enums, gates, mirrored UI policies, seed personas, Pest spec |
-| ✦ | a hue (or *surprise me*) | a gamut-mapped oklch palette, minted live in your terminal, driving every surface — same brand from landing page to mobile theme, served from the backend |
-| ● | a design soul | a distinct, beautiful website — same anatomy every time, a different face every project |
-| ▲ | secrets (optional) | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist |
+|     | You are asked             | You receive                                                                                                                                               |
+| --- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ◈   | a name, a domain, an org  | identity wired through web, webapp, mobile, API, CI                                                                                                       |
+| ⬡   | groups · roles · features | the entire RBAC layer as **code** — enums, gates, mirrored UI policies, seed personas, Pest spec                                                          |
+| ✦   | a hue (or _surprise me_)  | a gamut-mapped oklch palette, minted live in your terminal, driving every surface — same brand from landing page to mobile theme, served from the backend |
+| ●   | a design soul             | a distinct, beautiful website — same anatomy every time, a different face every project                                                                   |
+| ▲   | secrets (optional)        | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist                              |
 
 <p align="center">
   <img src="docs/flow.svg" alt="One command to a full platform" width="1200">
@@ -49,9 +53,7 @@ You answer a handful of questions; a complete, deployed, branded platform answer
 
 ## ✦ Four souls, one skeleton
 
-Every generated website shares the same anatomy — hero → features
-→ steps → pricing → faq → contact — restyled by a soul. Components
-know nothing about which skin is live; the soul owns the surface.
+Every generated website shares the same anatomy — hero → features → steps → pricing → faq → contact — restyled by a soul. Components know nothing about which skin is live; the soul owns the surface.
 
 <p align="center">
   <img src="docs/souls.svg" alt="The four design souls" width="1200">
@@ -59,22 +61,11 @@ know nothing about which skin is live; the soul owns the surface.
 
 ## ◆ The stack
 
-Versions live in the manifests — `composer.json`, `package.json`,
-`pubspec.yaml` — and nowhere else. The prose stays evergreen.
+Versions live in the manifests — `composer.json`, `package.json`, `pubspec.yaml` — and nowhere else; the prose stays evergreen. Five strata, one opinion each — the platform arises from the cloud substrate upward:
 
-| Layer | The opinion |
-|---|---|
-| API | **Laravel** — Octane (Swoole) · Sanctum · Pennant · Horizon · Reverb · Pest |
-| Data | Postgres · Redis · S3 (MinIO locally, AWS in production) |
-| Webapp | **Nuxt** — Nuxt UI · Tailwind · Sanctum auth · VueUse · no Pinia |
-| Website | **Nuxt** static — Nuxt UI · prerendered, S3 + CDN'd |
-| Mobile | **Flutter** — freezed · injectable · Cubits · auto_route · dio |
-| Cloud | **AWS** — EC2 swarm host · S3 buckets · IAM users, minted by an idempotent provisioner |
-| Edge | **Cloudflare** DNS — Traefik terminates TLS via DNS-01 |
-| Ship | Docker Swarm · Traefik · GHCR · GitHub Actions |
-| Stores | **Google Play** (internal track) + **App Store** (TestFlight) — every tag, zero human hands |
-| Watch | Loki · Grafana · Discord release pings |
-| Craft | pnpm workspace · Make · Prettier · php-cs-fixer · dart format · MCP |
+<p align="center">
+  <img src="docs/stack.svg" alt="The stack in five strata — interfaces: flutter, nuxt web and webapp; api: laravel with octane, sanctum, pennant, horizon, reverb, pest; data: postgres, redis, s3; cloud: aws, cloudflare; ship: docker swarm, ghcr, actions, google play and testflight, loki, grafana, discord — worlds arise from the cloud substrate upward" width="1200">
+</p>
 
 ## ▲ The remote platform
 
@@ -92,7 +83,7 @@ The stores get theirs too — every tag is signed and uploaded unattended: no ce
 
 ### ● The zero-ops checklist
 
-Everything between *git tag* and *serving customers* is idempotent, self-healing, and narrated on Discord — green or red. The checklist runs itself; you watch it happen:
+Everything between _git tag_ and _serving customers_ is idempotent, self-healing, and narrated on Discord — green or red. The checklist runs itself; you watch it happen:
 
 <p align="center">
   <img src="docs/checklist.svg" alt="The zero-ops checklist — dns and tls, hosting, datastores, caching, storage, email, migrations, observability: all automated, idempotent, narrated on Discord" width="1200">
@@ -110,9 +101,7 @@ Laravel with Node-class latency — on the same hardware, routinely faster.
 
 ## ⬡ Permissions are code
 
-No roles tables. No permission seeders. No cache drift. Four string
-enums and one gate — the matrix *is* the source of truth, mirrored
-to the frontend on the user payload, tested as a spec:
+No roles tables. No permission seeders. No cache drift. Four string enums and one gate — the matrix _is_ the source of truth, mirrored to the frontend on the user payload, tested as a spec:
 
 ```php
 // apps/backend/app/Enums/Group.php — generated from your answers
@@ -137,7 +126,7 @@ public function resolve(Role $role): array
 
 ```ts
 // apps/frontend — the same matrix, mirrored at scaffold time
-can('widget', 'create')   // ← reads user.policies['widget:create']
+can('widget', 'create')
 <Gate feature="widget" action="create"> … </Gate>
 ```
 
@@ -179,27 +168,19 @@ make services   # postgres + redis + minio
 make dev        # webapp + api + websockets + queues + logs — color-coded, real local domains
 ```
 
-Push a tag → images publish to GHCR → the Swarm rolls → Play and
-TestFlight get their builds → Discord pings. That's the whole
-release train.
+Push a tag → images publish to GHCR → the Swarm rolls → Play and TestFlight get their builds → Discord pings. That's the whole release train.
 
 ## ◆ The map
 
-| Path | Role |
-|---|---|
-| `index.mjs` | the factory gate — `node .`, interactive or `--answers` for agents |
-| `lib/` | prompts TUI · oklch engine · renderer · rbac generator · builders · provisioner |
-| `boilerplate/` | the platform tree — 250+ files, rendered per project |
-| `styling/souls/` | aurora · blueprint · editorial · neon |
-| `ai/` | the agent curriculum, shipped into every project |
-| `docs/` | the SVGs above — drawn in Apeiron's own generated palette |
+<p align="center">
+  <img src="docs/map.svg" alt="The map — apeiron root branching into index.mjs the factory gate, lib the engines, boilerplate the platform tree, styling souls, ai the agent curriculum, docs the visuals" width="1200">
+</p>
 
-Agents working *on* Apeiron itself: read [`AGENTS.md`](AGENTS.md).
+Agents working _on_ Apeiron itself: read [`AGENTS.md`](AGENTS.md).
 
 ---
 
 <p align="center">
-  <em>The palette of this very page — <code>#988cff</code> violet,
-  <code>#00b4bf</code> teal — was generated by Apeiron from hue 286.</em><br>
+  <em>The palette of this very page — <code>#988cff</code> violet, <code>#00b4bf</code> teal — was generated by Apeiron from hue 286.</em><br>
   <strong>From the boundless, worlds.</strong>
 </p>
