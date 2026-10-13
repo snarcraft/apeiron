@@ -2,8 +2,6 @@
   <img src="docs/banner.svg" alt="Apeiron — the boundless, source of platforms" width="1200">
 </p>
 
-<h1 align="center">A P E I R O N</h1>
-
 <p align="center">
   <em>An opinionated factory for full-stack businesses —<br>
   every project born complete, every line readable by humans and AI agents alike.</em>
