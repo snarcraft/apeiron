@@ -60,8 +60,9 @@ docker service scale {{APP_NAME}}_backend=4    # api workers (octane)
 docker service scale {{APP_NAME}}_horizon=2    # queue workers
 ```
 
-- **Vertical first**: Octane is hot in memory (coroutine I/O) — one
-  instance absorbs what php-fpm needs several for.
+- **Vertical first**: Octane is hot in memory (coroutine I/O) and
+  Swarm packs replicas edge to edge — one host does the work of a
+  small fleet.
 - **Horizontal**: `docker swarm join` a second EC2 — overlay net,
   placement, traefik re-converge. Horizon fits **Spot**: swarm
   reschedules a killed node's replicas.

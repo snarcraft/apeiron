@@ -20,7 +20,7 @@
 
   <!-- lane 1 : classic php -->
   <text x="40" y="86" class="lane-lbl">classic php</text>
-  <text x="40" y="104" class="dim">boots per request · php-fpm</text>
+  <text x="40" y="104" class="dim">boots per request, every request</text>
   <line x1="420" y1="92" x2="1090" y2="92" class="track"/>
 
   <g><circle cx="560" cy="92" r="14" fill="#15132b" stroke="#26224a"/>
