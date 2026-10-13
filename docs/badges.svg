@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="34" viewBox="0 0 880 34" role="img" aria-label="Apeiron badges">
+  <defs>
+    <linearGradient id="b-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#15132b"/>
+      <stop offset="100%" stop-color="#0d0c1e"/>
+    </linearGradient>
+  </defs>
+  <g font-family="system-ui, -apple-system, sans-serif" font-size="11.5">
+    <!-- node -->
+    <g>
+      <rect width="196" height="22" rx="6" fill="url(#b-fill)" stroke="#26224a"/>
+      <rect width="58" height="22" rx="6" fill="#988cff" fill-opacity="0.22"/>
+      <rect x="52" width="6" height="22" fill="#26224a"/>
+      <text x="29" y="15" text-anchor="middle" fill="#c4bcff" font-weight="600">node</text>
+      <text x="127" y="15" text-anchor="middle" fill="#e8e4ff">≥ 20 · zero deps</text>
+    </g>
+    <!-- stack -->
+    <g transform="translate(208)">
+      <rect width="252" height="22" rx="6" fill="url(#b-fill)" stroke="#26224a"/>
+      <rect width="52" height="22" rx="6" fill="#00b4bf" fill-opacity="0.2"/>
+      <rect x="46" width="6" height="22" fill="#26224a"/>
+      <text x="26" y="15" text-anchor="middle" fill="#a8ecf0" font-weight="600">stack</text>
+      <text x="154" y="15" text-anchor="middle" fill="#e8e4ff">nuxt 4 · laravel 13 · flutter</text>
+    </g>
+    <!-- deploy -->
+    <g transform="translate(472)">
+      <rect width="200" height="22" rx="6" fill="url(#b-fill)" stroke="#26224a"/>
+      <rect width="56" height="22" rx="6" fill="#988cff" fill-opacity="0.22"/>
+      <rect x="50" width="6" height="22" fill="#26224a"/>
+      <text x="28" y="15" text-anchor="middle" fill="#c4bcff" font-weight="600">ship</text>
+      <text x="130" y="15" text-anchor="middle" fill="#e8e4ff">ghcr · swarm · play</text>
+    </g>
+    <!-- readers -->
+    <g transform="translate(684)">
+      <rect width="196" height="22" rx="6" fill="url(#b-fill)" stroke="#26224a"/>
+      <rect width="52" height="22" rx="6" fill="#00b4bf" fill-opacity="0.2"/>
+      <rect x="46" width="6" height="22" fill="#26224a"/>
+      <text x="26" y="15" text-anchor="middle" fill="#a8ecf0" font-weight="600">read</text>
+      <text x="126" y="15" text-anchor="middle" fill="#e8e4ff">humans + ai agents</text>
+    </g>
+  </g>
+</svg>

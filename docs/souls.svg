@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-label="The four design souls of Apeiron">
+  <defs>
+    <linearGradient id="s-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0918"/>
+      <stop offset="100%" stop-color="#060610"/>
+    </linearGradient>
+    <radialGradient id="s-aurora-v" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#988cff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#988cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="s-aurora-t" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00b4bf" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#00b4bf" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="s-blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7aa2ff"/>
+      <stop offset="100%" stop-color="#3d6fe0"/>
+    </linearGradient>
+    <linearGradient id="s-gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d8b25e"/>
+      <stop offset="100%" stop-color="#a97e2f"/>
+    </linearGradient>
+    <linearGradient id="s-neon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="s-soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <pattern id="s-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M16 0 H0 V16" fill="none" stroke="#7aa2ff" stroke-opacity="0.28" stroke-width="0.7"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="330" rx="18" fill="url(#s-bg)"/>
+
+  <!-- ══ aurora ══ -->
+  <g transform="translate(40 36)">
+    <rect width="264" height="258" rx="14" fill="#0d0c1e" stroke="#26224a"/>
+    <clipPath id="clip-a"><rect width="264" height="118" rx="14"/></clipPath>
+    <g clip-path="url(#clip-a)">
+      <rect width="264" height="118" fill="#0a0916"/>
+      <circle cx="70" cy="40" r="46" fill="url(#s-aurora-v)" filter="url(#s-soft)"/>
+      <circle cx="196" cy="80" r="38" fill="url(#s-aurora-t)" filter="url(#s-soft)"/>
+      <rect x="72" y="52" width="120" height="52" rx="10" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.16"/>
+      <rect x="84" y="66" width="60" height="7" rx="3.5" fill="#ffffff" fill-opacity="0.5"/>
+      <rect x="84" y="82" width="90" height="7" rx="3.5" fill="#ffffff" fill-opacity="0.28"/>
+    </g>
+    <text x="20" y="152" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#e8e4ff">aurora</text>
+    <text x="20" y="172" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">floating light orbs, glass surfaces,</text>
+    <text x="20" y="188" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">gradient headlines — calm premium</text>
+    <text x="20" y="228" font-family="ui-monospace, Menlo, monospace" font-size="10.5" fill="#988cff">Geist · system color mode</text>
+  </g>
+
+  <!-- ══ blueprint ══ -->
+  <g transform="translate(324 36)">
+    <rect width="264" height="258" rx="4" fill="#0d0c1e" stroke="#26224a"/>
+    <clipPath id="clip-b"><rect width="264" height="118" rx="4"/></clipPath>
+    <g clip-path="url(#clip-b)">
+      <rect width="264" height="118" fill="#0a0916"/>
+      <rect width="264" height="118" fill="url(#s-grid)"/>
+      <circle cx="52" cy="60" r="26" fill="none" stroke="url(#s-blue)" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <line x1="52" y1="20" x2="52" y2="100" stroke="#7aa2ff" stroke-opacity="0.7" stroke-width="0.8"/>
+      <line x1="16" y1="60" x2="88" y2="60" stroke="#7aa2ff" stroke-opacity="0.7" stroke-width="0.8"/>
+      <rect x="118" y="30" width="118" height="58" fill="none" stroke="url(#s-blue)" stroke-width="1.4"/>
+      <path d="M118 22 v8 M130 22 h-12 M236 96 v-8 M224 96 h12" stroke="#7aa2ff" stroke-width="1.6" fill="none"/>
+      <path d="M132 48 h56 M132 64 h34" stroke="#7aa2ff" stroke-opacity="0.8" stroke-width="1.6"/>
+    </g>
+    <text x="20" y="152" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#e8e4ff">blueprint</text>
+    <text x="20" y="172" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">fine grids, mono labels, square</text>
+    <text x="20" y="188" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">corners — technical drawing</text>
+    <text x="20" y="228" font-family="ui-monospace, Menlo, monospace" font-size="10.5" fill="#7aa2ff">IBM Plex Sans · light mode</text>
+  </g>
+
+  <!-- ══ editorial ══ -->
+  <g transform="translate(608 36)">
+    <rect width="264" height="258" rx="2" fill="#0d0c1e" stroke="#26224a"/>
+    <clipPath id="clip-e"><rect width="264" height="118" rx="2"/></clipPath>
+    <g clip-path="url(#clip-e)">
+      <rect width="264" height="118" fill="#0a0916"/>
+      <text x="44" y="92" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="url(#s-gold)">Aa</text>
+      <line x1="140" y1="40" x2="228" y2="40" stroke="#d8b25e" stroke-opacity="0.85" stroke-width="2"/>
+      <line x1="140" y1="52" x2="196" y2="52" stroke="#d8b25e" stroke-opacity="0.4" stroke-width="1"/>
+      <line x1="140" y1="66" x2="228" y2="66" stroke="#d8b25e" stroke-opacity="0.4" stroke-width="1"/>
+      <text x="140" y="92" font-family="Georgia, serif" font-size="13" font-style="italic" fill="#c9b98a">gravitas</text>
+    </g>
+    <text x="20" y="152" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#e8e4ff">editorial</text>
+    <text x="20" y="172" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">serif display, generous whitespace,</text>
+    <text x="20" y="188" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">hairline rules — the journal look</text>
+    <text x="20" y="228" font-family="ui-monospace, Menlo, monospace" font-size="10.5" fill="#d8b25e">DM Serif Display · light mode</text>
+  </g>
+
+  <!-- ══ neon ══ -->
+  <g transform="translate(892 36)">
+    <rect width="264" height="258" rx="14" fill="#0d0c1e" stroke="#26224a"/>
+    <rect x="1.5" y="1.5" width="261" height="255" rx="12.5" fill="none" stroke="url(#s-neon)" stroke-opacity="0.35" stroke-width="1.4"/>
+    <clipPath id="clip-n"><rect width="264" height="118" rx="14"/></clipPath>
+    <g clip-path="url(#clip-n)">
+      <rect width="264" height="118" fill="#070710"/>
+      <rect x="26" y="26" width="212" height="66" rx="10" fill="#0d0c1e" stroke="#22d3ee" stroke-opacity="0.7"/>
+      <rect x="26" y="26" width="212" height="2.5" fill="url(#s-neon)">
+        <animate attributeName="opacity" values="0.35;1;0.35" dur="2.6s" repeatCount="indefinite"/>
+      </rect>
+      <text x="42" y="54" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#22d3ee">&gt; ship --env prod</text>
+      <text x="42" y="74" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#8b87a8">✓ 3 services · 0 downtime</text>
+      <rect x="42" y="82" width="7" height="12" fill="#22d3ee">
+        <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <text x="20" y="152" font-family="system-ui, sans-serif" font-size="17" font-weight="700" fill="#e8e4ff">neon</text>
+    <text x="20" y="172" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">dark-first, glow borders, electric</text>
+    <text x="20" y="188" font-family="system-ui, sans-serif" font-size="11.5" fill="#8b87a8">gradients — nightlife for devtools</text>
+    <text x="20" y="228" font-family="ui-monospace, Menlo, monospace" font-size="10.5" fill="#22d3ee">Space Grotesk · dark mode</text>
+  </g>
+</svg>

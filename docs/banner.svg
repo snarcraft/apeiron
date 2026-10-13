@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="Apeiron — the boundless, source of platforms">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="75%">
+      <stop offset="0%" stop-color="#12102a"/>
+      <stop offset="55%" stop-color="#0a0918"/>
+      <stop offset="100%" stop-color="#050510"/>
+    </radialGradient>
+    <radialGradient id="source" cx="38%" cy="32%" r="80%">
+      <stop offset="0%" stop-color="#cfc6ff"/>
+      <stop offset="35%" stop-color="#988cff"/>
+      <stop offset="72%" stop-color="#5b4ed0"/>
+      <stop offset="100%" stop-color="#2d2470"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#988cff" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#988cff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#988cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="tealGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00b4bf" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#00b4bf" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#988cff"/>
+      <stop offset="100%" stop-color="#00b4bf"/>
+    </linearGradient>
+    <linearGradient id="wordmark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e8e4ff"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#bdf3f6"/>
+    </linearGradient>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="soft2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+  </defs>
+
+  <!-- deep space -->
+  <rect width="1200" height="420" fill="url(#bg)"/>
+
+  <!-- starfield -->
+  <g fill="#cfc9ff">
+    <circle cx="84" cy="64" r="1.1" opacity="0.5"/>
+    <circle cx="212" cy="132" r="0.8" opacity="0.35"/>
+    <circle cx="318" cy="48" r="1.3" opacity="0.6"/>
+    <circle cx="470" cy="96" r="0.7" opacity="0.3"/>
+    <circle cx="742" cy="60" r="1" opacity="0.45"/>
+    <circle cx="893" cy="118" r="0.8" opacity="0.3"/>
+    <circle cx="1032" cy="52" r="1.2" opacity="0.55"/>
+    <circle cx="1128" cy="150" r="0.9" opacity="0.4"/>
+    <circle cx="60" cy="252" r="0.9" opacity="0.35"/>
+    <circle cx="156" cy="330" r="1.2" opacity="0.5"/>
+    <circle cx="1150" cy="286" r="1" opacity="0.4"/>
+    <circle cx="1044" cy="352" r="0.8" opacity="0.3"/>
+    <circle cx="268" cy="214" r="0.7" opacity="0.28"/>
+    <circle cx="960" cy="244" r="0.7" opacity="0.3"/>
+    <circle cx="402" cy="352" r="0.9" opacity="0.4"/>
+    <circle cx="806" cy="358" r="0.8" opacity="0.32"/>
+  </g>
+
+  <!-- the boundless source -->
+  <g transform="translate(600 172)">
+    <circle r="210" fill="url(#halo)"/>
+    <circle cx="-118" cy="86" r="92" fill="url(#tealGlow)" filter="url(#soft2)"/>
+
+    <!-- pulse rings -->
+    <circle r="70" fill="none" stroke="#988cff" stroke-opacity="0.5">
+      <animate attributeName="r" values="70;225" dur="4.5s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-opacity" values="0.5;0" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="70" fill="none" stroke="#00b4bf" stroke-opacity="0.4">
+      <animate attributeName="r" values="70;225" dur="4.5s" begin="2.2s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-opacity" values="0.4;0" dur="4.5s" begin="2.2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- orbits + worlds -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="46s" repeatCount="indefinite"/>
+      <ellipse rx="176" ry="60" fill="none" stroke="url(#ring)" stroke-opacity="0.35" stroke-width="1.2" transform="rotate(-18)"/>
+      <ellipse rx="150" ry="150" fill="none" stroke="#988cff" stroke-opacity="0.14" stroke-width="1"/>
+      <circle cx="176" cy="0" r="10" fill="url(#ring)" filter="url(#soft)"/>
+      <circle cx="176" cy="0" r="5.5" fill="#e9e6ff"/>
+      <circle cx="-124" cy="88" r="8" fill="#00b4bf" filter="url(#soft)"/>
+      <circle cx="-124" cy="88" r="4" fill="#d8fbfd"/>
+      <g transform="translate(-88 -128)">
+        <ellipse rx="15" ry="5.5" fill="none" stroke="#00b4bf" stroke-opacity="0.8" stroke-width="1.4" transform="rotate(-24)"/>
+        <circle r="6.5" fill="#988cff"/>
+      </g>
+    </g>
+
+    <!-- the core -->
+    <circle r="62" fill="#988cff" filter="url(#soft)" opacity="0.7"/>
+    <circle r="54" fill="url(#source)"/>
+    <circle cx="-14" cy="-16" r="20" fill="#ffffff" opacity="0.22"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="600" y="330" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="15" letter-spacing="6" fill="#00b4bf">ἄπειρον — THE BOUNDLESS</text>
+  <text x="600" y="372" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="40" font-weight="800" letter-spacing="18" fill="url(#wordmark)">APEIRON</text>
+  <text x="600" y="400" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" fill="#8b87a8">from one source, every platform</text>
+</svg>
