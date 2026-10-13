@@ -178,6 +178,16 @@ make services   # postgres + redis + minio
 make dev        # webapp + api + websockets + queues + logs — color-coded, real local domains
 ```
 
+Mobile, when you want the app too:
+
+```bash
+cd apps/mobile && flutter pub get
+flutter create --org com.yourorg --project-name yourapp .   # platform folders — once
+cd ../..
+make codegen    # freezed · json · router codegen, watch mode
+make mobile     # the app, against the same backend
+```
+
 Push a tag → images publish to GHCR → the Swarm rolls → Play and TestFlight get their builds → Discord pings. That's the whole release train.
 
 ## ◆ The map
