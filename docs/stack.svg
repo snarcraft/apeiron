@@ -9,9 +9,7 @@
       .lbl { fill: #c4bcff; font-weight: 600; font-size: 10px; letter-spacing: .1em; }
       .val { font-size: 13px; }
       .slab { fill: url(#k-fill); stroke: #26224a; }
-      .stratum { opacity: 0; animation: arrive 10s ease-out infinite; animation-delay: calc(var(--i) * .55s); }
       .spine { stroke: #00b4bf; stroke-width: 1.4; stroke-dasharray: 5 7; animation: dash 1.2s linear infinite reverse; }
-      @keyframes arrive { 0% { opacity: 0; } 2% { opacity: 1; } 95% { opacity: 1; } 100% { opacity: 0; } }
       @keyframes dash { to { stroke-dashoffset: -12; } }
     </style>
   </defs>
@@ -27,7 +25,7 @@
   <text x="64" y="30" text-anchor="middle" font-size="10" fill="#c4bcff" letter-spacing=".1em">WORLDS</text>
 
   <!-- stratum 1 : interfaces -->
-  <g class="stratum" style="--i:0">
+  <g>
     <rect x="100" y="28" width="1060" height="84" rx="11" class="slab"/>
     <text x="128" y="50" class="lbl">INTERFACES</text>
     <g transform="translate(128,60) scale(0.75)">
@@ -45,7 +43,7 @@
   </g>
 
   <!-- stratum 2 : api -->
-  <g class="stratum" style="--i:1">
+  <g>
     <rect x="100" y="124" width="1060" height="84" rx="11" class="slab" stroke="#988cff"/>
     <text x="128" y="146" class="lbl">API</text>
     <g transform="translate(128,156) scale(0.75)">
@@ -55,7 +53,7 @@
   </g>
 
   <!-- stratum 3 : data -->
-  <g class="stratum" style="--i:2">
+  <g>
     <rect x="100" y="220" width="1060" height="84" rx="11" class="slab"/>
     <text x="128" y="242" class="lbl">DATA</text>
     <g transform="translate(128,252) scale(0.75)">
@@ -73,7 +71,7 @@
   </g>
 
   <!-- stratum 4 : cloud -->
-  <g class="stratum" style="--i:3">
+  <g>
     <rect x="100" y="316" width="1060" height="84" rx="11" class="slab"/>
     <text x="128" y="338" class="lbl">CLOUD</text>
     <g transform="translate(128,348) scale(0.75)">
@@ -87,7 +85,7 @@
   </g>
 
   <!-- stratum 5 : ship -->
-  <g class="stratum" style="--i:4">
+  <g>
     <rect x="100" y="412" width="1060" height="84" rx="11" class="slab"/>
     <text x="128" y="434" class="lbl">SHIP</text>
     <g transform="translate(128,444) scale(0.75)">
