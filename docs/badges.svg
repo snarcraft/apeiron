@@ -72,7 +72,7 @@
       <rect width="185" height="22" rx="6" fill="url(#b-fill)" stroke="#26224a"/>
       <rect width="44" height="22" rx="6" fill="#00b4bf" fill-opacity="0.2"/>
       <rect x="38" width="6" height="22" fill="#26224a"/>
-      <text x="22" y="15" text-anchor="middle" fill="#a8ecf0" font-weight="600">read</text>
+      <text x="22" y="15" text-anchor="middle" fill="#a8ecf0" font-weight="600">dev</text>
       <g transform="translate(50,6) scale(0.5)">
         <g fill="none" stroke="#00b4bf" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="5"/>
