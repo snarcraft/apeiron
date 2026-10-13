@@ -69,7 +69,7 @@
   <g class="node d2">
     <rect x="110" y="210" width="180" height="52" rx="9" class="box"/>
     <text x="200" y="231" text-anchor="middle" class="val">web</text>
-    <text x="200" y="248" text-anchor="middle" class="dim">static + cdn'd</text>
+    <text x="200" y="248" text-anchor="middle" class="dim">static · cdn</text>
   </g>
 
   <!-- frontend -->

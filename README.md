@@ -35,21 +35,29 @@
 
 ## ◆ The concept
 
-Most templates give you a folder. **Apeiron gives you a worldview.** It encodes one deliberate, opinionated way to build a software business — so that project number one and project number twenty share the same skeleton, the same conventions, the same muscle memory.
+Most templates give you a folder. **Apeiron gives you a worldview** — one deliberate, opinionated way to build a software business, so that project one and project twenty share the same skeleton, the same conventions, the same muscle memory.
 
-You answer a handful of questions; a complete, deployed, branded platform answers back:
+You answer five questions. A complete, deployed, branded platform answers back.
 
-|     | You are asked             | You receive                                                                                                                                               |
-| --- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ◈   | a name, a domain, an org  | identity wired through web, webapp, mobile, API, CI                                                                                                       |
-| ⬡   | groups · roles · features | the entire RBAC layer as **code** — enums, gates, mirrored UI policies, seed personas, Pest spec                                                          |
-| ✦   | a hue (or _surprise me_)  | a gamut-mapped oklch palette, minted live in your terminal, driving every surface — same brand from landing page to mobile theme, served from the backend |
-| ●   | a design soul             | a distinct, beautiful website — same anatomy every time, a different face every project                                                                   |
-| ▲   | secrets                   | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist                              |
+> **◈** *a name, a domain, an org*
 
-<p align="center">
-  <img src="docs/flow.svg" alt="One command to a full platform" width="1200">
-</p>
+**Identity** — wired through the website, the webapp, mobile, the API and CI. Every surface knows who it is.
+
+> **⬡** *groups · roles · features*
+
+**Permissions** — the whole RBAC layer as code: enums, gates, mirrored UI policies, seed personas, and a Pest spec that proves it.
+
+> **✦** *a hue — or “surprise me”*
+
+**A palette** — gamut-mapped oklch, minted live in your terminal, driving every surface from landing page to mobile theme. One brand, served from the backend.
+
+> **●** *a design soul*
+
+**A website** — the same anatomy every time, a different face every project. Hero to contact, restyled by the soul.
+
+> **▲** *secrets*
+
+**A cloud** — an idempotent AWS provisioner: buckets, IAM users, EC2 per environment, Cloudflare DNS — and a ready-to-run `gh` checklist for the day you go live.
 
 ## ✦ Four souls, one skeleton
 

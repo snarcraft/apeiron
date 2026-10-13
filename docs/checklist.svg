@@ -10,15 +10,8 @@
       .dim { fill: #9d97c9; font-size: 11px; }
       .box { fill: url(#c-fill); stroke: #26224a; }
       .ring { fill: none; stroke: #26224a; }
-      .chip { opacity: 0; animation: arrive 9s ease-out infinite; animation-delay: calc(var(--i) * .35s); }
-      .tick { fill: none; stroke: #00b4bf; stroke-width: 2.2; stroke-linecap: round;
-              stroke-dasharray: 26; stroke-dashoffset: 26;
-              animation: draw 9s ease-out infinite; animation-delay: calc(var(--i) * .35s); }
-      .halo { fill: none; stroke: #00b4bf; stroke-opacity: .25; stroke-width: 1.2;
-              animation: breathe 9s ease-in-out infinite; animation-delay: calc(var(--i) * .35s); }
-      @keyframes arrive { 0% { opacity: 0; } 1.5% { opacity: 1; } 95% { opacity: 1; } 100% { opacity: 0; } }
-      @keyframes draw { 0% { stroke-dashoffset: 26; } 4% { stroke-dashoffset: 0; } 95% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 26; } }
-      @keyframes breathe { 0%,100% { stroke-opacity: .15; } 50% { stroke-opacity: .4; } }
+      .tick { fill: none; stroke: #00b4bf; stroke-width: 2.2; stroke-linecap: round; }
+      .halo { fill: none; stroke: #00b4bf; stroke-opacity: .25; stroke-width: 1.2; }
     </style>
   </defs>
 
@@ -26,81 +19,81 @@
 
   <!-- column 1 : x 23 -->
   <g transform="translate(24)">
-    <g class="chip" style="--i:0">
-      <rect width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="28" r="13"/><circle cx="28" cy="28" r="13" class="ring"/>
-      <path class="tick" d="M21,28 L26,34 L36,22"/>
-      <text x="52" y="33" class="lbl">dns + tls</text>
-      <text x="22" y="70" class="dim">cloudflare records minted · traefik</text>
-      <text x="22" y="87" class="dim">terminates tls via dns-01 — no certbot</text>
+    <g>
+      <rect y="24" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="52" r="13"/><circle cx="28" cy="52" r="13" class="ring"/>
+      <path class="tick" d="M21,52 L26,58 L36,46"/>
+      <text x="52" y="57" class="lbl">dns + tls</text>
+      <text x="22" y="94" class="dim">cloudflare records minted · traefik</text>
+      <text x="22" y="111" class="dim">terminates tls via dns-01 — no certbot</text>
     </g>
-    <g class="chip" style="--i:4">
-      <rect y="130" width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="158" r="13"/><circle cx="28" cy="158" r="13" class="ring"/>
-      <path class="tick" d="M21,158 L26,164 L36,152"/>
-      <text x="52" y="163" class="lbl">storage</text>
-      <text x="22" y="200" class="dim">delete a model — its files queue</text>
-      <text x="22" y="217" class="dim">for removal · nothing orphans</text>
+    <g>
+      <rect y="160" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="188" r="13"/><circle cx="28" cy="188" r="13" class="ring"/>
+      <path class="tick" d="M21,188 L26,194 L36,182"/>
+      <text x="52" y="193" class="lbl">storage</text>
+      <text x="22" y="230" class="dim">delete a model — its files queue</text>
+      <text x="22" y="247" class="dim">for removal · nothing orphans</text>
     </g>
   </g>
 
   <!-- column 2 : x 319 -->
   <g transform="translate(316)">
-    <g class="chip" style="--i:1">
-      <rect width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="28" r="13"/><circle cx="28" cy="28" r="13" class="ring"/>
-      <path class="tick" d="M21,28 L26,34 L36,22"/>
-      <text x="52" y="33" class="lbl">hosting</text>
-      <text x="22" y="70" class="dim">one ec2 per env · keys · security</text>
-      <text x="22" y="87" class="dim">groups — idempotent, re-runs reuse</text>
+    <g>
+      <rect y="24" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="52" r="13"/><circle cx="28" cy="52" r="13" class="ring"/>
+      <path class="tick" d="M21,52 L26,58 L36,46"/>
+      <text x="52" y="57" class="lbl">hosting</text>
+      <text x="22" y="94" class="dim">one ec2 per env · keys · security</text>
+      <text x="22" y="111" class="dim">groups — idempotent, re-runs reuse</text>
     </g>
-    <g class="chip" style="--i:5">
-      <rect y="130" width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="158" r="13"/><circle cx="28" cy="158" r="13" class="ring"/>
-      <path class="tick" d="M21,158 L26,164 L36,152"/>
-      <text x="52" y="163" class="lbl">email</text>
-      <text x="22" y="200" class="dim">queued verification + resets ·</text>
-      <text x="22" y="217" class="dim">failures broadcast · one var to ses</text>
+    <g>
+      <rect y="160" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="188" r="13"/><circle cx="28" cy="188" r="13" class="ring"/>
+      <path class="tick" d="M21,188 L26,194 L36,182"/>
+      <text x="52" y="193" class="lbl">email</text>
+      <text x="22" y="230" class="dim">queued verification + resets ·</text>
+      <text x="22" y="247" class="dim">failures broadcast · one var to ses</text>
     </g>
   </g>
 
   <!-- column 3 : x 615 -->
   <g transform="translate(608)">
-    <g class="chip" style="--i:2">
-      <rect width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="28" r="13"/><circle cx="28" cy="28" r="13" class="ring"/>
-      <path class="tick" d="M21,28 L26,34 L36,22"/>
-      <text x="52" y="33" class="lbl">datastores</text>
-      <text x="22" y="70" class="dim">postgres · redis · s3 media + cdn</text>
-      <text x="22" y="87" class="dim">buckets — least-privilege iam each</text>
+    <g>
+      <rect y="24" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="52" r="13"/><circle cx="28" cy="52" r="13" class="ring"/>
+      <path class="tick" d="M21,52 L26,58 L36,46"/>
+      <text x="52" y="57" class="lbl">datastores</text>
+      <text x="22" y="94" class="dim">postgres · redis · s3 media + cdn</text>
+      <text x="22" y="111" class="dim">buckets — least-privilege iam each</text>
     </g>
-    <g class="chip" style="--i:6">
-      <rect y="130" width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="158" r="13"/><circle cx="28" cy="158" r="13" class="ring"/>
-      <path class="tick" d="M21,158 L26,164 L36,152"/>
-      <text x="52" y="163" class="lbl">migrations</text>
-      <text x="22" y="200" class="dim">one-off swarm jobs *before* the roll —</text>
-      <text x="22" y="217" class="dim">every service boots on the new schema</text>
+    <g>
+      <rect y="160" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="188" r="13"/><circle cx="28" cy="188" r="13" class="ring"/>
+      <path class="tick" d="M21,188 L26,194 L36,182"/>
+      <text x="52" y="193" class="lbl">migrations</text>
+      <text x="22" y="230" class="dim">one-off swarm jobs *before* the roll —</text>
+      <text x="22" y="247" class="dim">every service boots on the new schema</text>
     </g>
   </g>
 
   <!-- column 4 : x 911 -->
   <g transform="translate(900)">
-    <g class="chip" style="--i:3">
-      <rect width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="28" r="13"/><circle cx="28" cy="28" r="13" class="ring"/>
-      <path class="tick" d="M21,28 L26,34 L36,22"/>
-      <text x="52" y="33" class="lbl">caching</text>
-      <text x="22" y="70" class="dim">redis cache · sessions · queues —</text>
-      <text x="22" y="87" class="dim">auth tag flushes itself on change</text>
+    <g>
+      <rect y="24" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="52" r="13"/><circle cx="28" cy="52" r="13" class="ring"/>
+      <path class="tick" d="M21,52 L26,58 L36,46"/>
+      <text x="52" y="57" class="lbl">caching</text>
+      <text x="22" y="94" class="dim">redis cache · sessions · queues —</text>
+      <text x="22" y="111" class="dim">auth tag flushes itself on change</text>
     </g>
-    <g class="chip" style="--i:7">
-      <rect y="130" width="276" height="116" rx="11" class="box"/>
-      <circle class="halo" cx="28" cy="158" r="13"/><circle cx="28" cy="158" r="13" class="ring"/>
-      <path class="tick" d="M21,158 L26,164 L36,152"/>
-      <text x="52" y="163" class="lbl">observability</text>
-      <text x="22" y="200" class="dim">loki scrapes all · grafana :3001 ·</text>
-      <text x="22" y="217" class="dim">discord narrates — green or red</text>
+    <g>
+      <rect y="160" width="276" height="116" rx="11" class="box"/>
+      <circle class="halo" cx="28" cy="188" r="13"/><circle cx="28" cy="188" r="13" class="ring"/>
+      <path class="tick" d="M21,188 L26,194 L36,182"/>
+      <text x="52" y="193" class="lbl">observability</text>
+      <text x="22" y="230" class="dim">loki scrapes all · grafana :3001 ·</text>
+      <text x="22" y="247" class="dim">discord narrates — green or red</text>
     </g>
   </g>
 </svg>
