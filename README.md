@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="Apeiron — the boundless, source of platforms" width="880">
+  <img src="docs/banner.svg" alt="Apeiron — the boundless, source of platforms" width="1200">
 </p>
 
 <h1 align="center">A P E I R O N</h1>
@@ -10,25 +10,30 @@
 </p>
 
 <p align="center">
-  <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: aws, cloudflare · ship: swarm, ghcr, app stores · humans + ai agents" width="880">
+  <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: aws, cloudflare · ship: swarm, ghcr, app stores · humans + ai agents" width="1200">
 </p>
 
 ---
 
-> **ἄπειρον** — *the boundless.* Anaximander, 26 centuries ago, named the
-> immortal source from which all worlds arise and to which they return.
-> This is that idea, as a repository: **one boundless source, every
-> platform you will ever build.**
+<p align="center">
+  <img src="docs/apeiron.svg" alt="ἄπειρον — worlds arising from the boundless and returning to it" width="1200">
+</p>
+
+<p align="center">
+  <sub><em>Anaximander, twenty-six centuries ago, named the immortal source</em></sub><br>
+  <sub><em>from which all worlds arise — and to which they return.</em></sub>
+</p>
+
+<p align="center">
+  <strong>This is that idea, as a repository:</strong><br>
+  one boundless source, every platform you will ever build.
+</p>
 
 ## ◆ The concept
 
-Most templates give you a folder. **Apeiron gives you a worldview.**
+Most templates give you a folder. **Apeiron gives you a worldview.** It encodes one deliberate, opinionated way to build a software business — so that project number one and project number twenty share the same skeleton, the same conventions, the same muscle memory.
 
-It encodes one deliberate, opinionated way to build a software
-business — so that project number one and project number twenty
-share the same skeleton, the same conventions, the same muscle
-memory. You answer a handful of questions; a complete, deployed,
-branded platform answers back:
+You answer a handful of questions; a complete, deployed, branded platform answers back:
 
 | | You are asked | You receive |
 |---|---|---|
@@ -39,7 +44,7 @@ branded platform answers back:
 | ▲ | secrets (optional) | an idempotent AWS provisioner — buckets, IAM users, EC2 per environment, Cloudflare DNS — plus a ready-to-run `gh` checklist |
 
 <p align="center">
-  <img src="docs/flow.svg" alt="One command to a full platform" width="880">
+  <img src="docs/flow.svg" alt="One command to a full platform" width="1200">
 </p>
 
 ## ✦ Four souls, one skeleton
@@ -49,7 +54,7 @@ Every generated website shares the same anatomy — hero → features
 know nothing about which skin is live; the soul owns the surface.
 
 <p align="center">
-  <img src="docs/souls.svg" alt="The four design souls" width="880">
+  <img src="docs/souls.svg" alt="The four design souls" width="1200">
 </p>
 
 ## ◆ The stack
@@ -75,63 +80,33 @@ Versions live in the manifests — `composer.json`, `package.json`,
 
 Tag a release and walk away — the train knows every stop:
 
-```
- Cloudflare DNS
-      │
- Traefik — TLS via DNS-01 · the only door
-      │
-      ├─ web ————— marketing, static + CDN'd
-      ├─ frontend — the webapp, SSR
-      └─ backend —— one image, four tempers:
-                      octane ——— API          horizon ——— queues
-                      reverb ——— websockets   scheduler —— cron
-      │
- postgres —— redis —— s3 media
-      │
- loki → grafana — and Discord gets the ping
-```
+<p align="center">
+  <img src="docs/remote.svg" alt="The remote platform — cloudflare dns through traefik to web, frontend and backend (octane, horizon, reverb, scheduler), down to postgres, redis, s3, stripe, and out to loki, grafana and discord" width="1200">
+</p>
 
-The stores get theirs too: every tag is signed and uploaded to
-**Google Play** and **TestFlight** unattended — no certificates
-dragged around laptops, no Xcode opened, no human in the loop.
+The stores get theirs too — every tag is signed and uploaded unattended: no certificates dragged around laptops, no Xcode opened, no human in the loop.
+
+<p align="center">
+  <img src="docs/stores.svg" alt="Every git tag ships itself to the app store via TestFlight and to Google Play on the internal track — unattended" width="1200">
+</p>
 
 ### ● The zero-ops checklist
 
-Everything between *git tag* and *serving customers* is
-idempotent and transparent — Discord narrates every step:
+Everything between *git tag* and *serving customers* is idempotent, self-healing, and narrated on Discord — green or red. The checklist runs itself; you watch it happen:
 
-- **DNS + TLS** — Cloudflare records are minted by the provisioner;
-  Traefik terminates TLS via DNS-01. No certbot, no renewal cron,
-  no certificates to babysit.
-- **Hosting** — one EC2 per environment: keypair, security group
-  (22/80/443, runner IPs allow-listed per deploy). Re-runs reuse
-  everything they find.
-- **Datastores** — Postgres, Redis, and two S3 buckets (media +
-  immutable asset/CDN with CORS), each with a least-privilege IAM
-  user. Local dev mirrors the trio on MinIO — same code, no ifdefs.
-- **Caching** — Redis carries cache, sessions and queues; the API
-  itself stays hot in Octane worker memory; identity caches live
-  behind an `auth` tag that flushes itself when identity changes.
-- **Storage** — S3-backed media with lifecycle cleanup: delete a
-  model and its files queue themselves for removal five minutes
-  later. Nothing orphans, nothing lingers.
-- **Email** — verification, resets and notifications ride the
-  queue; a failed send broadcasts `SendMailFailed`. `log` driver
-  out of the box, one variable to SES when you're ready.
-- **Migrations** — one-off swarm jobs that run *before* the stack
-  rolls, so every service boots on the new schema, never mid-flight.
-- **Observability** — Loki scrapes every container, Grafana answers
-  on `:3001`, and Discord reports every deploy — green or red.
+<p align="center">
+  <img src="docs/checklist.svg" alt="The zero-ops checklist — dns and tls, hosting, datastores, caching, storage, email, migrations, observability: all automated, idempotent, narrated on Discord" width="1200">
+</p>
 
 ### ⚡ An API that never boots twice
 
-Classic PHP folds the framework after every request. Octane +
-Swoole boot the application **once** and keep it hot in worker
-memory — Swoole's coroutine I/O serves requests in the time
-php-fpm spends waking up. Per-request services bind `scoped()` so
-state stays honest between workers, and the same image runs API,
-queues, websockets and cron. The result is Laravel with Node-class
-latency — on the same hardware, routinely faster.
+Classic PHP folds the framework after every request. Octane + Swoole boot once and stay hot in worker memory — coroutine I/O, `scoped()` per-request state, one image running API, queues, websockets and cron.
+
+<p align="center">
+  <img src="docs/octane.svg" alt="Classic php reboots the framework for every request; Octane plus Swoole boots once and serves hot from worker memory" width="1200">
+</p>
+
+Laravel with Node-class latency — on the same hardware, routinely faster.
 
 ## ⬡ Permissions are code
 
@@ -175,36 +150,22 @@ One matrix. Three surfaces. Zero divergence.
 
 ## ● Built for two readers
 
-Every project ships with an **agent curriculum** — not an
-afterthought, a first-class artifact:
+Every project ships an **agent curriculum** — a first-class artifact, not an afterthought. `AGENTS.md` is the map, `ai/conventions` the law per surface, `ai/playbooks` the end-to-end recipes. Humans and agents read the same book — and land byte-identical commits.
 
-```
-AGENTS.md                    ← the map an agent reads first
-ai/conventions/backend.md    ← the law per surface
-ai/conventions/frontend.md   ← components: global vs feature · composables: app vs feature
-ai/conventions/mobile.md     ← injectable · cubits · freezed · server-driven theme
-ai/playbooks/add-feature.md  ← enum → matrix → controller → nav → gates, end to end
-ai/playbooks/rbac.md         ← the model, the resolution chain, the never-list
-```
+<p align="center">
+  <img src="docs/readers.svg" alt="Two readers — human and ai agent — converge on one repo: same conventions, same fixers, byte-identical commits, same green Pest suite" width="1200">
+</p>
 
-The style law is enforced by fixers — Prettier, php-cs-fixer, dart
-format — so a human's commit and an agent's commit converge on
-**byte-identical formatting**. Pest is the shared truth both must
-keep green. MCP servers (Laravel Boost, Nuxt, Nuxt UI) are wired in
-`.mcp.json` so any agent works with live, version-matched docs.
-
-An agent that has never seen your project can add a feature
-end-to-end by reading one playbook. A human can too. That's the
-point.
+An agent that has never seen your project can add a feature end-to-end by reading one playbook. A human can too. That's the point.
 
 ## ▲ Quickstart
 
 ```bash
 git clone <this repo> && cd apeiron
 
-node scaffold.mjs                      # interactive — palette preview in your terminal
-node scaffold.mjs --list-souls         # meet the four souls
-node scaffold.mjs --answers answers.example.json --out ../my-next-business
+node .                                 # interactive — palette preview in your terminal
+node . --list-souls                    # meet the four souls
+node . --answers answers.example.json --out ../my-next-business
 ```
 
 Then, inside the newborn platform:
@@ -226,7 +187,7 @@ release train.
 
 | Path | Role |
 |---|---|
-| `scaffold.mjs` | the factory gate — interactive or `--answers` for agents |
+| `index.mjs` | the factory gate — `node .`, interactive or `--answers` for agents |
 | `lib/` | prompts TUI · oklch engine · renderer · rbac generator · builders · provisioner |
 | `boilerplate/` | the platform tree — 250+ files, rendered per project |
 | `styling/souls/` | aurora · blueprint · editorial · neon |

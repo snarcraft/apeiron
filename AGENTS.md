@@ -9,15 +9,15 @@ new project*, or to *improve Apeiron*.
 
 ```bash
 # interactive (human at the keyboard)
-node scaffold.mjs
+node .
 
 # non-interactive (you fill the answers)
-node scaffold.mjs --answers answers.json --out /path/to/new-project
+node . --answers answers.json --out /path/to/new-project
 ```
 
 The answers schema is documented in `answers.example.json`.
 Anything omitted falls back to defaults (see `loadAnswers` in
-`scaffold.mjs`). When a human is directing you: ask them for the
+`index.mjs`). When a human is directing you: ask them for the
 values you genuinely need (name, domain, groups/roles/features,
 palette, soul, integrations) and write an answers file — do not
 guess brand decisions.
@@ -29,7 +29,7 @@ After scaffolding, follow the generated project's own
 
 | Path | Role |
 |---|---|
-| `scaffold.mjs` | interactive/non-interactive scaffolder |
+| `index.mjs` | interactive/non-interactive scaffolder |
 | `lib/prompts.mjs` | zero-dep TUI prompts (text/select/multiselect/secret) |
 | `lib/oklch.mjs` | perceptual palette engine (hue → 50–950 scale) |
 | `lib/render.mjs` | `{{TOKEN}}` + `{{#if TOGGLE}}` renderer |
@@ -51,7 +51,7 @@ After scaffolding, follow the generated project's own
 
 1. Change the source (boilerplate, lib, souls, ai) — never a
    rendered project.
-2. Add a token or toggle in `scaffold.mjs` (`derive`) first.
-3. Test: `node scaffold.mjs --answers answers.example.json --out
+2. Add a token or toggle in `index.mjs` (`derive`) first.
+3. Test: `node . --answers answers.example.json --out
    /tmp/probe` then inspect the rendered tree.
 4. Keep every surface in sync: backend ↔ frontend ↔ web ↔ mobile ↔ ai docs.

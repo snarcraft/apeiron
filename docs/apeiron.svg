@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-label="Apeiron — worlds arising from the boundless and returning to it: orbiting dots emanate from a still center and dissolve back into it">
+  <defs>
+    <linearGradient id="p-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#15132b"/>
+      <stop offset="100%" stop-color="#0d0c1e"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#988cff" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#988cff" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .orbit { fill: none; stroke: #26224a; stroke-width: 1; }
+      .world { animation: arise linear infinite; }
+      .halo { animation: breathe 5s ease-in-out infinite; }
+      .halo2 { animation: breathe 5s ease-in-out infinite; animation-delay: 2.5s; }
+      @keyframes arise { 0% { opacity: 0; } 12% { opacity: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
+      @keyframes breathe { 0%,100% { opacity: .12; } 50% { opacity: .3; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="340" rx="14" fill="url(#p-fill)" stroke="#26224a"/>
+
+  <!-- faint stars -->
+  <g fill="#e8e4ff">
+    <circle cx="140" cy="60" r="1" opacity=".18"/><circle cx="260" cy="290" r="1.2" opacity=".14"/>
+    <circle cx="940" cy="52" r="1" opacity=".2"/><circle cx="1080" cy="280" r="1" opacity=".15"/>
+    <circle cx="70" cy="180" r="1" opacity=".12"/><circle cx="1140" cy="150" r="1.2" opacity=".18"/>
+    <circle cx="420" cy="36" r="1" opacity=".15"/><circle cx="800" cy="308" r="1" opacity=".14"/>
+  </g>
+
+  <!-- the boundless : a still center, breathing -->
+  <circle cx="600" cy="170" r="120" fill="url(#core)" class="halo"/>
+  <circle cx="600" cy="170" r="58" fill="none" stroke="#988cff" opacity=".16" class="halo2"/>
+  <circle cx="600" cy="170" r="5.5" fill="#988cff">
+    <animate attributeName="r" values="5;7;5" dur="5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- worlds arise, travel, return -->
+  <g transform="rotate(-30 600 170)">
+    <ellipse class="orbit" cx="600" cy="170" rx="280" ry="102"/>
+    <circle class="world" r="3.4" fill="#988cff" style="animation-duration:13s">
+      <animateMotion dur="13s" repeatCount="indefinite" path="M600,170 m -280,0 a 280,102 0 1,0 560,0 a 280,102 0 1,0 -560,0"/>
+    </circle>
+  </g>
+  <g transform="rotate(-14 600 170)">
+    <ellipse class="orbit" cx="600" cy="170" rx="212" ry="77"/>
+    <circle class="world" r="3" fill="#00b4bf" style="animation-duration:9.5s; animation-delay:2s">
+      <animateMotion dur="9.5s" begin="2s" repeatCount="indefinite" path="M600,170 m -212,0 a 212,77 0 1,0 424,0 a 212,77 0 1,0 -424,0"/>
+    </circle>
+  </g>
+  <g>
+    <ellipse class="orbit" cx="600" cy="170" rx="150" ry="54"/>
+    <circle class="world" r="3.8" fill="#c4bcff" style="animation-duration:7s; animation-delay:1s">
+      <animateMotion dur="7s" begin="1s" repeatCount="indefinite" path="M600,170 m -150,0 a 150,54 0 1,0 300,0 a 150,54 0 1,0 -300,0"/>
+    </circle>
+  </g>
+  <g transform="rotate(14 600 170)">
+    <ellipse class="orbit" cx="600" cy="170" rx="236" ry="86"/>
+    <circle class="world" r="3.2" fill="#988cff" style="animation-duration:11s; animation-delay:4s">
+      <animateMotion dur="11s" begin="4s" repeatCount="indefinite" path="M600,170 m -236,0 a 236,86 0 1,0 472,0 a 236,86 0 1,0 -472,0"/>
+    </circle>
+  </g>
+  <g transform="rotate(30 600 170)">
+    <ellipse class="orbit" cx="600" cy="170" rx="170" ry="62"/>
+    <circle class="world" r="3" fill="#00b4bf" style="animation-duration:8s; animation-delay:5.4s">
+      <animateMotion dur="8s" begin="5.4s" repeatCount="indefinite" path="M600,170 m -170,0 a 170,62 0 1,0 340,0 a 170,62 0 1,0 -340,0"/>
+    </circle>
+  </g>
+</svg>

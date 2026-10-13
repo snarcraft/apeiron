@@ -1,5 +1,5 @@
 {
-  "$comment": "Non-interactive scaffold answers. Copy, fill, run: node scaffold.mjs --answers answers.json --out ../my-project. Anything omitted falls back to these defaults. groups/roles/features are merged with the locked spine (operator, admin, account, home, media).",
+  "$comment": "Non-interactive scaffold answers. Copy, fill, run: node . --answers answers.json --out ../my-project. Anything omitted falls back to these defaults. groups/roles/features are merged with the locked spine (operator, admin, account, home, media).",
   "name": "Aurora Labs",
   "slug": "aurora",
   "org": "aurora-labs",

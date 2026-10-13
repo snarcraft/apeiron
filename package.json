@@ -1,0 +1,18 @@
+{
+  "name": "apeiron",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ἄπειρον — the platform factory: one boundless source, every platform you will ever build. Zero dependencies.",
+  "type": "module",
+  "main": "index.mjs",
+  "bin": {
+    "apeiron": "index.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node ."
+  },
+  "license": "MIT"
+}

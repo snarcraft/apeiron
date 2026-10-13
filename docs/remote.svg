@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-label="The remote platform — cloudflare dns through traefik to web, frontend and backend (octane, horizon, reverb, scheduler), down to postgres, redis, s3, and out to loki, grafana and discord">
+  <defs>
+    <linearGradient id="r-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#15132b"/>
+      <stop offset="100%" stop-color="#0d0c1e"/>
+    </linearGradient>
+    <style>
+      text { font-family: system-ui, -apple-system, sans-serif; fill: #e8e4ff; }
+      .lbl { fill: #a8ecf0; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; }
+      .lbl-v { fill: #c4bcff; }
+      .val { font-size: 13px; }
+      .dim { fill: #9d97c9; font-size: 10.5px; }
+      .box { fill: url(#r-fill); stroke: #26224a; }
+      .flow { fill: none; stroke: #988cff; stroke-width: 1.4; stroke-dasharray: 5 7; animation: dash 1.1s linear infinite; }
+      .flow-t { stroke: #00b4bf; }
+      .still { fill: none; stroke: #26224a; stroke-width: 1.4; }
+      .node { animation: breathe 3.6s ease-in-out infinite; }
+      .d1 { animation-delay: .45s; } .d2 { animation-delay: .9s; }
+      .d3 { animation-delay: 1.35s; } .d4 { animation-delay: 1.8s; }
+      .ping { animation: ping 2.4s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes dash { to { stroke-dashoffset: -12; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: .45; } }
+      @keyframes ping { 0% { opacity: 0; } 18% { opacity: 1; } 70%,100% { opacity: 0; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="640" rx="14" fill="url(#r-fill)" stroke="#26224a"/>
+
+  <!-- edges : requests flow violet, telemetry flows teal -->
+  <path class="flow" d="M600,64 L600,106"/>
+  <path class="flow" d="M600,146 C600,182 200,168 200,208"/>
+  <path class="flow" d="M600,146 L600,206"/>
+  <path class="flow" d="M600,146 C600,182 1000,168 1000,208"/>
+  <path class="flow" d="M480,364 C440,396 380,396 342,412"/>
+  <path class="flow" d="M600,364 L600,410"/>
+  <path class="flow" d="M720,364 C760,396 820,396 858,412"/>
+  <path class="flow flow-t" d="M342,446 C330,496 370,506 404,520"/>
+  <path class="flow flow-t" d="M560,538 L704,538"/>
+  <path class="flow flow-t" d="M858,446 C870,496 830,506 796,520"/>
+
+  <!-- traveling requests -->
+  <circle r="3" fill="#988cff">
+    <animateMotion dur="1.6s" repeatCount="indefinite" path="M600,64 L600,206"/>
+  </circle>
+  <circle r="3" fill="#988cff">
+    <animateMotion dur="2s" begin="0.5s" repeatCount="indefinite" path="M600,146 C600,182 200,168 200,208"/>
+  </circle>
+  <circle r="3" fill="#988cff">
+    <animateMotion dur="2s" begin="1s" repeatCount="indefinite" path="M600,146 C600,182 1000,168 1000,208"/>
+  </circle>
+  <circle r="3" fill="#00b4bf">
+    <animateMotion dur="2.6s" begin="0.8s" repeatCount="indefinite" path="M600,364 L600,410"/>
+  </circle>
+
+  <!-- cloudflare -->
+  <g class="node">
+    <rect x="500" y="28" width="200" height="36" rx="9" class="box" stroke="#00b4bf"/>
+    <text x="600" y="51" text-anchor="middle" class="val">cloudflare dns</text>
+  </g>
+
+  <!-- traefik -->
+  <g class="node d1">
+    <rect x="430" y="110" width="340" height="36" rx="9" class="box" stroke="#988cff"/>
+    <text x="600" y="126" text-anchor="middle" class="lbl lbl-v">EDGE</text>
+    <text x="600" y="139" text-anchor="middle" class="dim">traefik — tls via dns-01 · the only door</text>
+  </g>
+
+  <!-- web -->
+  <g class="node d2">
+    <rect x="110" y="210" width="180" height="52" rx="9" class="box"/>
+    <text x="200" y="231" text-anchor="middle" class="val">web</text>
+    <text x="200" y="248" text-anchor="middle" class="dim">static + cdn'd</text>
+  </g>
+
+  <!-- frontend -->
+  <g class="node d3">
+    <rect x="910" y="210" width="180" height="52" rx="9" class="box"/>
+    <text x="1000" y="231" text-anchor="middle" class="val">frontend</text>
+    <text x="1000" y="248" text-anchor="middle" class="dim">the webapp · ssr</text>
+  </g>
+
+  <!-- backend : one image, four tempers -->
+  <g class="node d1">
+    <rect x="370" y="208" width="460" height="156" rx="11" class="box" stroke="#988cff"/>
+    <text x="600" y="230" text-anchor="middle" class="val">backend — one image, four tempers</text>
+    <g class="node d1">
+      <rect x="392" y="244" width="200" height="44" rx="8" class="box"/>
+      <text x="492" y="263" text-anchor="middle" class="lbl lbl-v">OCTANE</text>
+      <text x="492" y="278" text-anchor="middle" class="dim">api · hot in memory</text>
+    </g>
+    <g class="node d2">
+      <rect x="608" y="244" width="200" height="44" rx="8" class="box"/>
+      <text x="708" y="263" text-anchor="middle" class="lbl lbl-v">HORIZON</text>
+      <text x="708" y="278" text-anchor="middle" class="dim">queues</text>
+    </g>
+    <g class="node d3">
+      <rect x="392" y="300" width="200" height="44" rx="8" class="box"/>
+      <text x="492" y="319" text-anchor="middle" class="lbl lbl-v">REVERB</text>
+      <text x="492" y="334" text-anchor="middle" class="dim">websockets</text>
+    </g>
+    <g class="node d4">
+      <rect x="608" y="300" width="200" height="44" rx="8" class="box"/>
+      <text x="708" y="319" text-anchor="middle" class="lbl lbl-v">SCHEDULER</text>
+      <text x="708" y="334" text-anchor="middle" class="dim">cron</text>
+    </g>
+  </g>
+
+  <!-- datastores -->
+  <g class="node d2">
+    <rect x="257" y="412" width="170" height="34" rx="9" class="box"/>
+    <text x="342" y="434" text-anchor="middle" class="val">postgres</text>
+  </g>
+  <g class="node d3">
+    <rect x="515" y="412" width="170" height="34" rx="9" class="box"/>
+    <text x="600" y="434" text-anchor="middle" class="val">redis</text>
+  </g>
+  <g class="node d4">
+    <rect x="773" y="412" width="170" height="34" rx="9" class="box"/>
+    <text x="858" y="434" text-anchor="middle" class="val">s3 · media</text>
+  </g>
+
+  <!-- stripe : external billing, webhook-verified -->
+  <path class="flow" d="M760,364 C850,400 940,410 990,429"/>
+  <circle r="3" fill="#988cff">
+    <animateMotion dur="2.2s" begin="1.3s" repeatCount="indefinite" path="M760,364 C850,400 940,410 990,429"/>
+  </circle>
+  <g class="node d2">
+    <rect x="990" y="412" width="160" height="34" rx="9" class="box" stroke="#988cff"/>
+    <text x="1070" y="434" text-anchor="middle" class="val">stripe · billing</text>
+  </g>
+
+  <!-- observability -->
+  <g class="node d3">
+    <rect x="404" y="520" width="240" height="36" rx="9" class="box" stroke="#00b4bf"/>
+    <text x="524" y="543" text-anchor="middle" class="val">loki → grafana</text>
+  </g>
+  <g class="node">
+    <rect x="704" y="520" width="200" height="36" rx="9" class="box" stroke="#00b4bf"/>
+    <text x="786" y="543" text-anchor="middle" class="lbl">DISCORD</text>
+    <circle class="ping" cx="874" cy="538" r="4" fill="#00b4bf"/>
+  </g>
+</svg>

@@ -52,7 +52,7 @@ To retune a palette later: edit the oklch values in
 
 Adding a soul: new folder with `web.css`, `app.css`, `Hero.vue`
 implementing the contract above, plus an entry in the `SOULS`
-table of `scaffold.mjs`.
+table of `index.mjs`.
 
 ## House rules (all souls)
 

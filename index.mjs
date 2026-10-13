@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 // ============================================================
-// scaffold.mjs — interactive project scaffolder
+// index.mjs — interactive project scaffolder
 // ============================================================
 // Renders a full monorepo from the answers to a few questions:
 // identity → domains → RBAC (groups/roles/features) → palette →
 // design soul → integrations → secrets. Zero dependencies.
 //
-//   node scaffold.mjs                        interactive
-//   node scaffold.mjs --answers a.json       non-interactive (agents)
-//   node scaffold.mjs --out ../acme          target directory
-//   node scaffold.mjs --list-souls           show design souls
+//   node .                        interactive
+//   node . --answers a.json       non-interactive (agents)
+//   node . --out ../acme          target directory
+//   node . --list-souls           show design souls
 //
 // Node >= 20 required.
 
@@ -52,7 +52,7 @@ const { values: args } = parseArgs({
 })
 
 if (args.help) {
-  console.log(`usage: node scaffold.mjs [--answers answers.json] [--out ../target] [--list-souls]`)
+  console.log(`usage: node . [--answers answers.json] [--out ../target] [--list-souls]`)
   process.exit(0)
 }
 
