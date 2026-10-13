@@ -13,8 +13,7 @@
   <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: cloudflare, aws · ship: swarm, ghcr, app stores · humans + agents" width="1200">
 </p>
 
-> [!WARNING]
-> **In active development** — expect breaking changes between releases. Built for professionals who run their own infrastructure; others should wait for the stable release.
+> ⚠️ **In active development** — expect breaking changes between releases. Built for professionals who run their own infrastructure; others should wait for the stable release.
 
 ---
 
