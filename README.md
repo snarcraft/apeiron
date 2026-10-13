@@ -171,7 +171,7 @@ Then, inside the newborn platform:
 
 ```bash
 pnpm install
-cd apps/backend && composer install && cp .env.example .env
+cd apps/backend && composer install
 php artisan key:generate && php artisan migrate --seed
 cd ../..
 make services   # postgres + redis + minio
