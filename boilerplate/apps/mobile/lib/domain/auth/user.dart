@@ -17,7 +17,7 @@ class User with _$User {
     @Default({}) Map<String, bool> policies,
   }) = _User;
 
-  bool may(String feature, String action) => policies['$feature:$action'] ?? false;
+  bool can(String feature, String action) => policies['$feature:$action'] ?? false;
 
   bool get isAdmin => group == 'operator' && role == 'admin';
 

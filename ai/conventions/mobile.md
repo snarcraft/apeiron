@@ -72,5 +72,11 @@ Copy the kernel rhythm: `domain/<feature>/` (facade + freezed
 model) → `repositories/<feature>_repository.dart`
 (`@LazySingleton(as: <Feature>Facade)`) → `store/<feature>/`
 (watcher or form cubit) → `views/<feature>/` screen +
-router entry. Gate UI with `user.may('<feature>', '<action>')` —
+router entry. Gate UI with `user.can('<feature>', '<action>')` —
 the policy map rides on the User payload, same as the webapp.
+
+## Release
+
+Tags publish themselves: the `mobile` workflow signs the AAB/IPA
+in CI and uploads to Google Play (internal track) and TestFlight.
+Never build a store artifact locally — push a tag instead.

@@ -8,8 +8,9 @@ use App\Enums\Group;
 use App\Enums\Role;
 
 /**
- * The ability surface: `$user->may(Feature::TASK, Action::READ)`.
- * Permissions resolve from the enum matrix — never the database.
+ * The ability surface: `$user->can(Feature::TASK, Action::READ)` or
+ * `$user->can('task:read')`. Permissions resolve from the enum
+ * matrix — never the database.
  *
  * @property ?\App\Enums\Group $group
  * @property ?\App\Enums\Role $role
@@ -48,25 +49,29 @@ trait InteractsWithAbilities
         return $this->abilities()[$feature->value] ?? [];
     }
 
-    public function may(Feature $feature, Action $action): bool
+    public function can($abilities, $arguments = []): bool
+    {
+        if ($abilities instanceof Feature && $arguments instanceof Action) {
+            return $this->permits($abilities, $arguments);
+        }
+
+        if (is_string($abilities) && str_contains($abilities, ':')) {
+            [$feature, $action] = explode(':', $abilities, 2);
+
+            if (null !== Feature::tryFrom($feature) && null !== Action::tryFrom($action)) {
+                return $this->permits(Feature::from($feature), Action::from($action));
+            }
+        }
+
+        return parent::can($abilities, $arguments);
+    }
+
+    private function permits(Feature $feature, Action $action): bool
     {
         if ($this->isAdmin()) {
             return true;
         }
 
         return in_array($action, $this->actions($feature));
-    }
-
-    public function can($abilities, $arguments = []): bool
-    {
-        if (is_string($abilities) && str_contains($abilities, ':')) {
-            [$feature, $action] = explode(':', $abilities, 2);
-
-            if (null !== Feature::tryFrom($feature) && null !== Action::tryFrom($action)) {
-                return $this->may(Feature::from($feature), Action::from($action));
-            }
-        }
-
-        return parent::can($abilities, $arguments);
     }
 }

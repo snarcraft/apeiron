@@ -1,6 +1,6 @@
 # Styling conventions — all surfaces
 
-Tailwind v4, CSS-first. The design system is **tokens → souls →
+Tailwind, CSS-first. The design system is **tokens → souls →
 semantic utilities**.
 
 ## Tokens

@@ -1,6 +1,6 @@
 # Frontend conventions — apps/frontend (webapp)
 
-Nuxt 4 · Nuxt UI v4 · Tailwind v4 (CSS-first) · Sanctum auth · no Pinia.
+Nuxt · Nuxt UI · Tailwind (CSS-first) · Sanctum auth · no Pinia.
 
 ## Architecture
 

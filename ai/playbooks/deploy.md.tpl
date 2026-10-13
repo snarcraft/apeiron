@@ -27,6 +27,14 @@ git tag v1.1.0 && git push origin v1.1.0
 `inspire` as one-off swarm jobs, rolls the stack, waits for
 replicas, prunes old images. Discord gets a ping either way.
 
+## Stores
+
+Mobile publishes itself — no certificates on laptops, no Xcode.
+The `mobile` workflow signs and uploads every tag to **Google
+Play** (internal track) and **TestFlight**. Store credentials live
+in the `mobile` environment (`docs/SECRETS.md`); once they're set,
+releases are fully hands-off.
+
 ## Environments
 
 - branch `main` → staging (`server/staging.yml`, `staging.` hosts)

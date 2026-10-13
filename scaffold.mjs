@@ -71,7 +71,7 @@ function banner() {
   console.log(c.bold(c.cyan('  ╭──────────────────────────────────────────────╮')))
   console.log(c.bold(c.cyan('  │  ') + '◆  m o n o r e p e   s c a f f o l d e r     ' + c.bold(c.cyan('│'))))
   console.log(c.bold(c.cyan('  ╰──────────────────────────────────────────────╯')))
-  console.log(c.dim('  Nuxt 4 · Laravel 13 · Tailwind v4 · Swarm · GH Actions'))
+  console.log(c.dim('  Laravel · Nuxt · Flutter · AWS · Cloudflare · Swarm'))
   console.log('')
 }
 
@@ -359,7 +359,17 @@ async function main() {
     await writeGenerated(join(target, rel), content)
   }
 
-  const ctx = { ...a, groups, roles, features, matrix, domain: a.domain, title: a.name.trim() }
+  const ctx = {
+    ...a,
+    groups,
+    roles,
+    features,
+    matrix,
+    domain: a.domain,
+    appDomain: `${a.appSubdomain}.${a.domain}`,
+    socketDomain: `${a.socketSubdomain}.${a.domain}`,
+    title: a.name.trim(),
+  }
 
   // The scaffolded brand rides on the platform Setting — every
   // surface (webapp injection, mobile boot) reads it at runtime.
@@ -371,7 +381,7 @@ async function main() {
     brightness: SOULS[a.soul].colorMode === 'dark' ? 'dark' : 'light',
   }
 
-  await g('apps/backend/composer.json', builders.composerJson(a))
+  await g('apps/backend/composer.json', builders.composerJson(ctx))
   await g('apps/backend/.env.example', builders.backendEnvExample(a))
   await g('secrets/local.env', builders.secretsEnv({ kind: 'local', ...ctx, values: a.secrets, locales: a.locales }))
   await g('secrets/staging.env', builders.secretsEnv({ kind: 'staging', ...ctx, values: {}, locales: a.locales }))

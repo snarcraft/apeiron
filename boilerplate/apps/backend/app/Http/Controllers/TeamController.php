@@ -26,7 +26,7 @@ class TeamController extends Controller
 
     public function store(): JsonResponse
     {
-        abort_unless(request()->user()->may(\App\Enums\Feature::TEAM, \App\Enums\Action::CREATE), 403, 'You cannot create teams.');
+        abort_unless(request()->user()->can(\App\Enums\Feature::TEAM, \App\Enums\Action::CREATE), 403, 'You cannot create teams.');
 
         $team = Team::create(request()->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -40,7 +40,7 @@ class TeamController extends Controller
 
     public function update(Team $team): TeamResource
     {
-        abort_unless(request()->user()->may(\App\Enums\Feature::TEAM, \App\Enums\Action::UPDATE), 403, 'You cannot update this team.');
+        abort_unless(request()->user()->can(\App\Enums\Feature::TEAM, \App\Enums\Action::UPDATE), 403, 'You cannot update this team.');
 
         $team->update(request()->validate([
             'name' => ['sometimes', 'string', 'max:255'],
@@ -51,7 +51,7 @@ class TeamController extends Controller
 
     public function destroy(Team $team): \Illuminate\Http\Response
     {
-        abort_unless(request()->user()->may(\App\Enums\Feature::TEAM, \App\Enums\Action::DELETE), 403, 'You cannot delete this team.');
+        abort_unless(request()->user()->can(\App\Enums\Feature::TEAM, \App\Enums\Action::DELETE), 403, 'You cannot delete this team.');
 
         $team->delete();
 
@@ -60,7 +60,7 @@ class TeamController extends Controller
 
     public function members(Team $team): AnonymousResourceCollection
     {
-        abort_unless(request()->user()->may(\App\Enums\Feature::USER, \App\Enums\Action::INDEX), 403, 'You cannot list members.');
+        abort_unless(request()->user()->can(\App\Enums\Feature::USER, \App\Enums\Action::INDEX), 403, 'You cannot list members.');
 
         return MemberResource::collection($team->members()->with('user')->get());
     }

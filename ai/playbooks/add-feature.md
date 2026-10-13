@@ -49,7 +49,7 @@ Then edit the migration to the house shape (`stubs/migration.create.stub`):
 ```php
 public function __invoke(Request $request): AnonymousResourceCollection
 {
-    abort_unless($request->user()->may(Feature::WIDGET, Action::READ), 403, 'You cannot read widgets.');
+    abort_unless($request->user()->can(Feature::WIDGET, Action::READ), 403, 'You cannot read widgets.');
 
     return WidgetResource::collection(Widget::latest()->get());
 }

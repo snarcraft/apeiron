@@ -14,7 +14,7 @@ class MediaController extends Controller
     {
         $request = request();
 
-        abort_unless($request->user()->may(\App\Enums\Feature::MEDIA, \App\Enums\Action::CREATE), 403, 'You cannot upload media.');
+        abort_unless($request->user()->can(\App\Enums\Feature::MEDIA, \App\Enums\Action::CREATE), 403, 'You cannot upload media.');
 
         $file = $request->file('file');
         abort_unless($file, 422, 'No file provided.');
@@ -41,7 +41,7 @@ class MediaController extends Controller
 
     public function destroy(Media $media): Response
     {
-        abort_unless(request()->user()->may(\App\Enums\Feature::MEDIA, \App\Enums\Action::DELETE), 403, 'You cannot delete media.');
+        abort_unless(request()->user()->can(\App\Enums\Feature::MEDIA, \App\Enums\Action::DELETE), 403, 'You cannot delete media.');
 
         Storage::disk($media->disk)->delete($media->path);
         $media->delete();

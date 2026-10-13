@@ -1,6 +1,6 @@
 # Backend conventions — apps/backend
 
-Laravel 13 · PHP 8.4 · Octane (Swoole) · Pest · Sanctum · Pennant.
+Laravel · PHP · Octane (Swoole) · Pest · Sanctum · Pennant · Horizon · Reverb.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ app/
 
 - **Invokable controllers per verb**: `Task/IndexController`,
   `Task/StoreController` — `__invoke` only, feature folders.
-- **Authorization**: `abort_unless($request->user()->may(Feature::TASK,
+- **Authorization**: `abort_unless($request->user()->can(Feature::TASK,
   Action::CREATE), 403, '…')` in the controller, or
   `->middleware('can:task:create')` on the route. Both are fine;
   pick per controller and stay consistent within it.

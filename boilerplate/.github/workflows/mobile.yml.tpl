@@ -79,6 +79,38 @@ jobs:
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           EOF
 
+      # ── iOS signing ────────────────────────────────────────
+      - name: Materialize iOS profile + ExportOptions
+        run: |
+          DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$DIR"
+          echo -n "${{ secrets.IOS_MOBILEPROVISION }}" | base64 --decode --output "$DIR/appstore.mobileprovision"
+          PLIST=$(security cms -D -i "$DIR/appstore.mobileprovision")
+          UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin <<< "$PLIST")
+          TEAM=$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' /dev/stdin <<< "$PLIST")
+          cat > ios/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>$TEAM</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.APP_BUNDLE }}</key><string>$UUID</string>
+            </dict>
+            <key>stripSwiftSymbols</key><true/>
+          </dict>
+          </plist>
+          EOF
+
+      - uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+
       # ── App config (the mobile .env) ────────────────────────
       - name: Materialize assets/app.json
         run: echo -n "${{ secrets.APP_CONFIG }}" | base64 --decode --output assets/app.json
@@ -116,6 +148,7 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build --delete-conflicting-outputs
       - run: flutter build appbundle --release --target lib/release.dart
+      - run: flutter build ipa --release --target lib/release.dart --export-options-plist ios/ExportOptions.plist
 
       # ── Release ─────────────────────────────────────────────
       - name: Upload to Google Play (internal)
@@ -127,19 +160,13 @@ jobs:
           track: internal
           status: completed
 
-      # iOS path — enable once App Store Connect secrets exist:
-      #
-      # - uses: apple-actions/import-codesign-certs@v3
-      #   with:
-      #     p12-file-base64: ${{ secrets.IOS_CERTIFICATE }}
-      #     p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-      # - run: flutter build ipa --release --target lib/release.dart --export-options-plist ios/ExportOptions.plist
-      # - uses: apple-actions/upload-testflight-build@v3
-      #   with:
-      #     app-path: build/ios/ipa/*.ipa
-      #     issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
-      #     api-key-id: ${{ secrets.APP_STORE_KEY_ID }}
-      #     api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v5
+        with:
+          app-path: build/ios/ipa/*.ipa
+          issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
 
       - name: Notify Discord
         uses: ./.github/actions/notify-discord

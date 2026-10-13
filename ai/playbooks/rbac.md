@@ -26,7 +26,7 @@ request ─► can:widget:read (route middleware)
               │
               ▼
        Pennant flag "widget:read" (cached per user)
-              │  defined as $user->may($feature, $action)
+              │  defined as $user->can($feature, $action)
               ▼
        Group::resolve($user->role)[feature] ─► in_array(action)
 ```

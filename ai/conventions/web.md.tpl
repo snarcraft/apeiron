@@ -1,6 +1,6 @@
 # Website conventions — apps/web
 
-Nuxt 4 static · Nuxt UI v4 · prerendered + CDN'd assets.
+Nuxt static · Nuxt UI · prerendered + CDN'd assets.
 
 ## Content: two tiers
 

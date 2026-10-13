@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/badges.svg" alt="node ≥ 20, zero deps · nuxt 4, laravel 13, flutter · ghcr, swarm, play · humans + ai agents" width="880">
+  <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: aws, cloudflare · ship: swarm, ghcr, app stores · humans + ai agents" width="880">
 </p>
 
 ---
@@ -52,6 +52,87 @@ know nothing about which skin is live; the soul owns the surface.
   <img src="docs/souls.svg" alt="The four design souls" width="880">
 </p>
 
+## ◆ The stack
+
+Versions live in the manifests — `composer.json`, `package.json`,
+`pubspec.yaml` — and nowhere else. The prose stays evergreen.
+
+| Layer | The opinion |
+|---|---|
+| API | **Laravel** — Octane (Swoole) · Sanctum · Pennant · Horizon · Reverb · Pest |
+| Data | Postgres · Redis · S3 (MinIO locally, AWS in production) |
+| Webapp | **Nuxt** — Nuxt UI · Tailwind · Sanctum auth · VueUse · no Pinia |
+| Website | **Nuxt** static — Nuxt UI · prerendered, S3 + CDN'd |
+| Mobile | **Flutter** — freezed · injectable · Cubits · auto_route · dio |
+| Cloud | **AWS** — EC2 swarm host · S3 buckets · IAM users, minted by an idempotent provisioner |
+| Edge | **Cloudflare** DNS — Traefik terminates TLS via DNS-01 |
+| Ship | Docker Swarm · Traefik · GHCR · GitHub Actions |
+| Stores | **Google Play** (internal track) + **App Store** (TestFlight) — every tag, zero human hands |
+| Watch | Loki · Grafana · Discord release pings |
+| Craft | pnpm workspace · Make · Prettier · php-cs-fixer · dart format · MCP |
+
+## ▲ The remote platform
+
+Tag a release and walk away — the train knows every stop:
+
+```
+ Cloudflare DNS
+      │
+ Traefik — TLS via DNS-01 · the only door
+      │
+      ├─ web ————— marketing, static + CDN'd
+      ├─ frontend — the webapp, SSR
+      └─ backend —— one image, four tempers:
+                      octane ——— API          horizon ——— queues
+                      reverb ——— websockets   scheduler —— cron
+      │
+ postgres —— redis —— s3 media
+      │
+ loki → grafana — and Discord gets the ping
+```
+
+The stores get theirs too: every tag is signed and uploaded to
+**Google Play** and **TestFlight** unattended — no certificates
+dragged around laptops, no Xcode opened, no human in the loop.
+
+### ● The zero-ops checklist
+
+Everything between *git tag* and *serving customers* is
+idempotent and transparent — Discord narrates every step:
+
+- **DNS + TLS** — Cloudflare records are minted by the provisioner;
+  Traefik terminates TLS via DNS-01. No certbot, no renewal cron,
+  no certificates to babysit.
+- **Hosting** — one EC2 per environment: keypair, security group
+  (22/80/443, runner IPs allow-listed per deploy). Re-runs reuse
+  everything they find.
+- **Datastores** — Postgres, Redis, and two S3 buckets (media +
+  immutable asset/CDN with CORS), each with a least-privilege IAM
+  user. Local dev mirrors the trio on MinIO — same code, no ifdefs.
+- **Caching** — Redis carries cache, sessions and queues; the API
+  itself stays hot in Octane worker memory; identity caches live
+  behind an `auth` tag that flushes itself when identity changes.
+- **Storage** — S3-backed media with lifecycle cleanup: delete a
+  model and its files queue themselves for removal five minutes
+  later. Nothing orphans, nothing lingers.
+- **Email** — verification, resets and notifications ride the
+  queue; a failed send broadcasts `SendMailFailed`. `log` driver
+  out of the box, one variable to SES when you're ready.
+- **Migrations** — one-off swarm jobs that run *before* the stack
+  rolls, so every service boots on the new schema, never mid-flight.
+- **Observability** — Loki scrapes every container, Grafana answers
+  on `:3001`, and Discord reports every deploy — green or red.
+
+### ⚡ An API that never boots twice
+
+Classic PHP folds the framework after every request. Octane +
+Swoole boot the application **once** and keep it hot in worker
+memory — Swoole's coroutine I/O serves requests in the time
+php-fpm spends waking up. Per-request services bind `scoped()` so
+state stays honest between workers, and the same image runs API,
+queues, websockets and cron. The result is Laravel with Node-class
+latency — on the same hardware, routinely faster.
+
 ## ⬡ Permissions are code
 
 No roles tables. No permission seeders. No cache drift. Four string
@@ -87,7 +168,7 @@ can('widget', 'create')   // ← reads user.policies['widget:create']
 
 ```dart
 // apps/mobile — same payload, same gate
-user.may('widget', 'create');
+user.can('widget', 'create');
 ```
 
 One matrix. Three surfaces. Zero divergence.
@@ -137,8 +218,9 @@ make services   # postgres + redis + minio
 make dev        # webapp + api + websockets + queues + logs — color-coded, real local domains
 ```
 
-Push a tag → images publish → the Swarm rolls → Discord pings.
-That's the whole release train.
+Push a tag → images publish to GHCR → the Swarm rolls → Play and
+TestFlight get their builds → Discord pings. That's the whole
+release train.
 
 ## ◆ The map
 

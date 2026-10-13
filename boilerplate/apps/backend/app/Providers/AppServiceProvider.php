@@ -111,7 +111,7 @@ class AppServiceProvider extends ServiceProvider
             foreach (Action::cases() as $action) {
                 Pennant::define(
                     "{$feature->value}:{$action->value}",
-                    fn (User $user) => $user->may($feature, $action),
+                    fn (User $user) => $user->can($feature, $action),
                 );
             }
         }

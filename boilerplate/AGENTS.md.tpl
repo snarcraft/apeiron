@@ -1,7 +1,7 @@
 # AGENTS.md — {{APP_TITLE}}
 
 You are working in **{{APP_TITLE}}**, a pnpm monorepo:
-Nuxt 4 web + webapp · Laravel 13 API · Docker Swarm deploy.
+Nuxt web + webapp · Laravel API{{#if MOBILE}} · Flutter mobile{{/if}} · Docker Swarm deploy.
 This file is your map. `ai/` is your curriculum. Read before
 writing code.
 
