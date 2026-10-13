@@ -1,0 +1,186 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/*
+ * SOUL: BLUEPRINT — technical drawing made product. Fine grids,
+ * mono uppercase labels, square corners, measured everything.
+ * Precision as personality.
+ */
+@theme static {
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-primary-50: {{PRIMARY_50}};
+  --color-primary-100: {{PRIMARY_100}};
+  --color-primary-200: {{PRIMARY_200}};
+  --color-primary-300: {{PRIMARY_300}};
+  --color-primary-400: {{PRIMARY_400}};
+  --color-primary-500: {{PRIMARY_500}};
+  --color-primary-600: {{PRIMARY_600}};
+  --color-primary-700: {{PRIMARY_700}};
+  --color-primary-800: {{PRIMARY_800}};
+  --color-primary-900: {{PRIMARY_900}};
+  --color-primary-950: {{PRIMARY_950}};
+
+  --color-secondary-50: {{SECONDARY_50}};
+  --color-secondary-100: {{SECONDARY_100}};
+  --color-secondary-200: {{SECONDARY_200}};
+  --color-secondary-300: {{SECONDARY_300}};
+  --color-secondary-400: {{SECONDARY_400}};
+  --color-secondary-500: {{SECONDARY_500}};
+  --color-secondary-600: {{SECONDARY_600}};
+  --color-secondary-700: {{SECONDARY_700}};
+  --color-secondary-800: {{SECONDARY_800}};
+  --color-secondary-900: {{SECONDARY_900}};
+  --color-secondary-950: {{SECONDARY_950}};
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 40px 40px;
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  10%,
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tick-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.soul-card {
+  position: relative;
+  border: 1px solid var(--ui-border-accented);
+  border-radius: 2px;
+  background-color: var(--ui-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.soul-card:hover {
+  border-color: var(--color-primary-500);
+  box-shadow: 4px 4px 0 0 color-mix(in oklab, var(--color-primary-500) 30%, transparent);
+}
+
+/* corner registration ticks */
+.soul-card::before,
+.soul-card::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--color-primary-500);
+  opacity: 0.7;
+}
+
+.soul-card::before {
+  top: -5px;
+  left: -5px;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+
+.soul-card::after {
+  bottom: -5px;
+  right: -5px;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+.soul-hero-bg {
+  background-image:
+    linear-gradient(to right, var(--ui-border-accented) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ui-border-accented) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 20%, transparent 80%);
+}
+
+.soul-grad-text {
+  color: var(--color-primary-600);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--color-secondary-500);
+}
+
+.soul-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-primary-500);
+  border-radius: 2px;
+  color: var(--color-primary-600);
+  background-color: color-mix(in oklab, var(--color-primary-500) 8%, transparent);
+}
+
+.group:hover .soul-chip {
+  background-color: var(--color-primary-500);
+  color: var(--ui-bg);
+}
+
+.soul-ghost {
+  font-family: var(--font-mono);
+  font-size: 3.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ui-border-accented);
+  user-select: none;
+}
+
+.soul-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.soul-mono::before {
+  content: '// ';
+  color: var(--color-primary-500);
+}
+
+.bg-dots {
+  background-image: radial-gradient(circle, var(--ui-border-accented) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+}

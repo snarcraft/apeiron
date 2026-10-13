@@ -1,0 +1,10 @@
+{
+  "$schema": "https://cdn.laravelboost.com/schema/boost.json",
+  "agents": ["claude_code", "cursor", "codex", "opencode"],
+  "skills": {
+    "pennant-development": true,
+    "octane-development": true,
+    "configuring-horizon": true,
+    "testing-best-practices": true
+  }
+}

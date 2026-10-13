@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Http\Requests;
+
+class {{ class }} extends FormRequest
+{
+    /**
+     * @return array<string, array<int, string>>
+     */
+    public function rules(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        //
+    }
+}

@@ -1,0 +1,45 @@
+{
+  "$comment": "Non-interactive scaffold answers. Copy, fill, run: node scaffold.mjs --answers answers.json --out ../my-project. Anything omitted falls back to these defaults. groups/roles/features are merged with the locked spine (operator, admin, account, home, media).",
+  "name": "Aurora Labs",
+  "slug": "aurora",
+  "org": "aurora-labs",
+  "repo": "platform",
+  "domain": "auroralabs.io",
+  "appSubdomain": "app",
+  "socketSubdomain": "socket",
+  "locales": [
+    "en",
+    "fr"
+  ],
+  "timezone": "Europe/Paris",
+  "country": "FR",
+  "currency": "EUR",
+  "groups": [
+    "client",
+    "vendor"
+  ],
+  "roles": [
+    "manager",
+    "member"
+  ],
+  "features": [
+    "team",
+    "user",
+    "invoice"
+  ],
+  "primaryHue": 286,
+  "secondaryHue": 202,
+  "soul": "aurora",
+  "secrets": {
+    "STRIPE_KEY": "",
+    "STRIPE_SECRET": "",
+    "STRIPE_WEBHOOK_SECRET": "",
+    "DISCORD_CONTACT_WEBHOOK_URL": "",
+    "DISCORD_USER_ID": "",
+    "CF_DNS_API_TOKEN": "",
+    "DB_PASSWORD": "",
+    "REDIS_PASSWORD": ""
+  },
+  "gitInit": true,
+  "out": "../aurora"
+}

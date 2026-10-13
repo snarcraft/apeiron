@@ -1,0 +1,143 @@
+name: Swarm up
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+# main → staging · tags → production. Waits for the publish
+# workflows to have pushed the images before rolling the stack.
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy stack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    environment: ${{ github.ref_name == 'main' && 'staging' || (github.ref_name == 'production' && 'production' || 'development') }}
+    strategy:
+      matrix:
+        node: [24]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract branch name
+        id: branch
+        run: |
+          NAME="${GITHUB_REF#refs/*/}"
+          echo "name=${NAME,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Allow runner IP on EC2 security group
+        uses: sohelamin/aws-security-group-add-ip-action@v1.0.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          port: 22
+          description: "{{APP_NAME}}-ci"
+
+      - name: Copy server files
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: server/*
+          target: /home/ubuntu/{{APP_NAME}}
+          strip_components: 1
+
+      - name: Sync configs & deploy
+        uses: appleboy/ssh-action@v1
+        env:
+          VAR_APP_NAME: ${{ vars.APP_NAME }}
+          VAR_APP_ENV: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+          VAR_APP_VERSION: ${{ vars.APP_VERSION }}
+          VAR_APP_URL: ${{ vars.APP_URL }}
+          VAR_APP_TIMEZONE: ${{ vars.APP_TIMEZONE }}
+          VAR_APP_DEBUG: ${{ vars.APP_DEBUG }}
+          VAR_APP_LOCALE: ${{ vars.APP_LOCALE }}
+          VAR_APP_FALLBACK_LOCALE: ${{ vars.APP_FALLBACK_LOCALE }}
+          VAR_APP_MAINTENANCE_DRIVER: ${{ vars.APP_MAINTENANCE_DRIVER }}
+          VAR_LOG_CHANNEL: ${{ vars.LOG_CHANNEL }}
+          VAR_DB_CONNECTION: ${{ vars.DB_CONNECTION }}
+          VAR_DB_HOST: ${{ vars.DB_HOST }}
+          VAR_DB_PORT: ${{ vars.DB_PORT }}
+          VAR_DB_DATABASE: ${{ vars.DB_DATABASE }}
+          VAR_DB_USERNAME: ${{ vars.DB_USERNAME }}
+          VAR_SESSION_DRIVER: ${{ vars.SESSION_DRIVER }}
+          VAR_SESSION_DOMAIN: ${{ vars.SESSION_DOMAIN }}
+          VAR_BROADCAST_CONNECTION: ${{ vars.BROADCAST_CONNECTION }}
+          VAR_FILESYSTEM_DISK: ${{ vars.FILESYSTEM_DISK }}
+          VAR_QUEUE_CONNECTION: ${{ vars.QUEUE_CONNECTION }}
+          VAR_CACHE_STORE: ${{ vars.CACHE_STORE }}
+          VAR_CACHE_PREFIX: ${{ vars.CACHE_PREFIX }}
+          VAR_REDIS_CLIENT: ${{ vars.REDIS_CLIENT }}
+          VAR_REDIS_HOST: ${{ vars.REDIS_HOST }}
+          VAR_REDIS_PORT: ${{ vars.REDIS_PORT }}
+          VAR_REVERB_APP_ID: ${{ vars.REVERB_APP_ID }}
+          VAR_REVERB_HOST: ${{ vars.REVERB_HOST }}
+          VAR_REVERB_PORT: ${{ vars.REVERB_PORT }}
+          VAR_REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
+          VAR_CDN_URL: ${{ vars.CDN_URL }}
+          VAR_AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          VAR_AWS_BUCKET: ${{ vars.AWS_BUCKET }}
+          VAR_FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+          VAR_WEB_URL: ${{ vars.WEB_URL }}
+          VAR_SANCTUM_STATEFUL_DOMAINS: ${{ vars.SANCTUM_STATEFUL_DOMAINS }}
+          SEC_APP_KEY: ${{ secrets.APP_KEY }}
+          SEC_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SEC_REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          SEC_REVERB_APP_KEY: ${{ secrets.REVERB_APP_KEY }}
+          SEC_REVERB_APP_SECRET: ${{ secrets.REVERB_APP_SECRET }}
+          SEC_AWS_ACCESS_KEY_ID: ${{ secrets.APP_AWS_ACCESS_KEY_ID }}
+          SEC_AWS_SECRET_ACCESS_KEY: ${{ secrets.APP_AWS_SECRET_ACCESS_KEY }}
+          SEC_STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
+          SEC_STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+          SEC_STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          SEC_CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+          SEC_GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_BRANCH: ${{ steps.branch.outputs.name }}
+          GH_REGISTRY: ghcr.io
+          GH_REPOSITORY: {{GITHUB_REPOSITORY}}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: GH_BRANCH,GH_REGISTRY,GH_REPOSITORY,VAR_APP_NAME,VAR_APP_ENV,VAR_APP_VERSION,VAR_APP_URL,VAR_APP_TIMEZONE,VAR_APP_DEBUG,VAR_APP_LOCALE,VAR_APP_FALLBACK_LOCALE,VAR_APP_MAINTENANCE_DRIVER,VAR_LOG_CHANNEL,VAR_DB_CONNECTION,VAR_DB_HOST,VAR_DB_PORT,VAR_DB_DATABASE,VAR_DB_USERNAME,VAR_SESSION_DRIVER,VAR_SESSION_DOMAIN,VAR_BROADCAST_CONNECTION,VAR_FILESYSTEM_DISK,VAR_QUEUE_CONNECTION,VAR_CACHE_STORE,VAR_CACHE_PREFIX,VAR_REDIS_CLIENT,VAR_REDIS_HOST,VAR_REDIS_PORT,VAR_REVERB_APP_ID,VAR_REVERB_HOST,VAR_REVERB_PORT,VAR_REVERB_SCHEME,VAR_CDN_URL,VAR_AWS_DEFAULT_REGION,VAR_AWS_BUCKET,VAR_FRONTEND_URL,VAR_WEB_URL,VAR_SANCTUM_STATEFUL_DOMAINS,SEC_APP_KEY,SEC_DB_PASSWORD,SEC_REDIS_PASSWORD,SEC_REVERB_APP_KEY,SEC_REVERB_APP_SECRET,SEC_AWS_ACCESS_KEY_ID,SEC_AWS_SECRET_ACCESS_KEY,SEC_STRIPE_KEY,SEC_STRIPE_SECRET,SEC_STRIPE_WEBHOOK_SECRET,SEC_CF_DNS_API_TOKEN,SEC_GH_TOKEN
+          script: |
+            cd /home/ubuntu/{{APP_NAME}}
+            export APP_NAME="$(echo $VAR_APP_NAME | tr -d '\r')"
+            export APP_ENV="$(echo $VAR_APP_ENV | tr -d '\r')"
+            export APP_VERSION="$(echo $VAR_APP_VERSION | tr -d '\r')"
+            bash ./swarm.sh
+            bash ./deploy.sh
+
+      - name: Notify Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_SERVER_WEBHOOK_URL }}
+          DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
+          APP_VERSION: ${{ vars.APP_VERSION }}
+          APP_ENV: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+          IMAGE: ghcr.io/{{GITHUB_REPOSITORY}}
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then COLOR=3066993; TITLE="🚀 $APP_NAME $APP_VERSION deployed on $APP_ENV"; DESC="Ship it."; else COLOR=15158332; TITLE="💥 $APP_NAME $APP_VERSION failed to deploy on $APP_ENV"; DESC="docker stack ps / services $APP_NAME on the host."; fi
+          jq -n --arg color "$COLOR" --arg title "$TITLE" --arg desc "$DESC" --arg image "$IMAGE:$BRANCH" --arg sha "$SHA" --arg actor "$ACTOR" --arg user "<@$DISCORD_USER_ID>" \
+            '{content: $user, embeds: [{title: $title, description: $desc, color: ($color|tonumber), fields: [{name: "Image", value: ("`" + $image + "`"), inline: true}, {name: "Commit", value: ("`" + $sha[0:7] + "`"), inline: true}, {name: "By", value: $actor, inline: true}]}]}' \
+            | curl -sf -X POST -H 'Content-Type: application/json' -d @- "$DISCORD_WEBHOOK_URL"

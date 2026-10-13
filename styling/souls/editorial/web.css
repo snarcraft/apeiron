@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/*
+ * SOUL: EDITORIAL — serif display, generous whitespace, hairline
+ * rules, drop caps energy. The journal look; gravitas without
+ * stiffness.
+ */
+@theme static {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --color-primary-50: {{PRIMARY_50}};
+  --color-primary-100: {{PRIMARY_100}};
+  --color-primary-200: {{PRIMARY_200}};
+  --color-primary-300: {{PRIMARY_300}};
+  --color-primary-400: {{PRIMARY_400}};
+  --color-primary-500: {{PRIMARY_500}};
+  --color-primary-600: {{PRIMARY_600}};
+  --color-primary-700: {{PRIMARY_700}};
+  --color-primary-800: {{PRIMARY_800}};
+  --color-primary-900: {{PRIMARY_900}};
+  --color-primary-950: {{PRIMARY_950}};
+
+  --color-secondary-50: {{SECONDARY_50}};
+  --color-secondary-100: {{SECONDARY_100}};
+  --color-secondary-200: {{SECONDARY_200}};
+  --color-secondary-300: {{SECONDARY_300}};
+  --color-secondary-400: {{SECONDARY_400}};
+  --color-secondary-500: {{SECONDARY_500}};
+  --color-secondary-600: {{SECONDARY_600}};
+  --color-secondary-700: {{SECONDARY_700}};
+  --color-secondary-800: {{SECONDARY_800}};
+  --color-secondary-900: {{SECONDARY_900}};
+  --color-secondary-950: {{SECONDARY_950}};
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underline-grow {
+  from {
+    background-size: 0% 2px;
+  }
+
+  to {
+    background-size: 100% 2px;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.soul-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.soul-card {
+  border-radius: 4px;
+  border: 1px solid var(--ui-border);
+  background-color: var(--ui-bg);
+  padding: 2rem;
+  transition: border-color 0.25s ease;
+}
+
+.soul-card:hover {
+  border-color: var(--color-primary-500);
+}
+
+.soul-card:hover .soul-rule {
+  background-size: 100% 2px;
+}
+
+.soul-hero-bg {
+  background-image: radial-gradient(ellipse 90% 60% at 50% 0%, color-mix(in oklab, var(--color-primary-500) 6%, transparent), transparent);
+}
+
+.soul-grad-text {
+  font-style: italic;
+  color: var(--color-primary-600);
+  background-image: linear-gradient(var(--color-secondary-500), var(--color-secondary-500));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  padding-bottom: 2px;
+}
+
+.soul-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--ui-border-accented);
+  color: var(--color-primary-600);
+}
+
+.group:hover .soul-chip {
+  background-color: color-mix(in oklab, var(--color-primary-500) 10%, transparent);
+}
+
+.soul-ghost {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 0.8;
+  color: color-mix(in oklab, var(--color-primary-500) 18%, transparent);
+  user-select: none;
+}
+
+.soul-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+
+.soul-rule {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background-image: linear-gradient(to right, var(--color-primary-500), transparent);
+  background-repeat: no-repeat;
+  background-size: 0% 2px;
+  transition: background-size 0.4s ease;
+}
+
+.bg-dots {
+  background-image: radial-gradient(circle, var(--ui-border-accented) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+}

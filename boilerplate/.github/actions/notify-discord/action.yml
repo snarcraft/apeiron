@@ -1,0 +1,61 @@
+name: 'Notify Discord'
+description: 'Post a publish notification embed to Discord'
+
+inputs:
+  service:
+    description: 'Service that was published (backend/frontend/web)'
+    required: true
+  sha:
+    description: 'Commit sha'
+    required: true
+  branch:
+    description: 'Branch or tag name (image tag)'
+    required: true
+  registry:
+    description: 'Registry host'
+    required: true
+  repository:
+    description: 'Repository (owner/name)'
+    required: true
+  app-name:
+    description: 'Application name'
+    required: true
+  app-env:
+    description: 'Environment (staging/production)'
+    required: true
+  app-version:
+    description: 'Application version'
+    required: true
+  discord-webhook-url:
+    description: 'Discord webhook URL'
+    required: true
+  discord-user-id:
+    description: 'Discord user id to mention'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Notify
+      shell: bash
+      env:
+        DISCORD_WEBHOOK_URL: ${{ inputs.discord-webhook-url }}
+        DISCORD_USER_ID: ${{ inputs.discord-user-id }}
+      run: |
+        IMAGE="${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.service }}:${{ inputs.branch }}"
+        jq -n \
+          --arg user "<@$DISCORD_USER_ID>" \
+          --arg title "🚀 New ${{ inputs.app-name }} ${{ inputs.service }} version published" \
+          --arg image "$IMAGE" \
+          --arg sha "${{ inputs.sha }}" \
+          --arg env "${{ inputs.app-env }}" \
+          --arg version "${{ inputs.app-version }}" \
+          '{content: $user, embeds: [{title: $title, color: 3066993, fields: [
+            {name: "Image", value: ("`" + $image + "`"), inline: true},
+            {name: "Commit", value: ("`" + $sha[0:7] + "`"), inline: true},
+            {name: "Version", value: ("`" + $version + "`"), inline: true},
+            {name: "Environment", value: $env, inline: true}
+          ]}]}' \
+          | curl -sf -X POST -H 'Content-Type: application/json' -d @- "$DISCORD_WEBHOOK_URL" \
+          && echo "Discord notified" \
+          || echo "Discord notification failed (non-blocking)"

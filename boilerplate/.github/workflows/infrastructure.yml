@@ -1,0 +1,63 @@
+name: Infrastructure up
+
+on:
+  workflow_dispatch:
+
+jobs:
+  infrastructure:
+    name: Bootstrap host & infra stack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Allow runner IP on EC2 security group
+        uses: sohelamin/aws-security-group-add-ip-action@v1.0.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          aws-security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
+          port: 22
+          description: "{{APP_NAME}}-ci-infra"
+
+      - name: Copy server files
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: server/*
+          target: /home/ubuntu/{{APP_NAME}}
+          strip_components: 1
+
+      - name: Bootstrap host & deploy infra stack
+        uses: appleboy/ssh-action@v1
+        env:
+          VAR_APP_NAME: ${{ vars.APP_NAME }}
+          VAR_APP_ENV: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+          VAR_APP_VERSION: ${{ vars.APP_VERSION }}
+          VAR_APP_URL: ${{ vars.APP_URL }}
+          VAR_DB_DATABASE: ${{ vars.DB_DATABASE }}
+          VAR_DB_USERNAME: ${{ vars.DB_USERNAME }}
+          SEC_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SEC_REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          SEC_CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+          SEC_GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: VAR_APP_NAME,VAR_APP_ENV,VAR_APP_VERSION,VAR_APP_URL,VAR_DB_DATABASE,VAR_DB_USERNAME,SEC_DB_PASSWORD,SEC_REDIS_PASSWORD,SEC_CF_DNS_API_TOKEN,SEC_GF_SECURITY_ADMIN_PASSWORD
+          script: |
+            cd /home/ubuntu/{{APP_NAME}}
+            export APP_NAME="$(echo $VAR_APP_NAME | tr -d '\r')"
+            export APP_ENV="$(echo $VAR_APP_ENV | tr -d '\r')"
+            export APP_VERSION="$(echo $VAR_APP_VERSION | tr -d '\r')"
+            sudo -E bash ./docker.sh
+            bash ./swarm.sh
+            sg docker -c 'bash ./infra.sh'

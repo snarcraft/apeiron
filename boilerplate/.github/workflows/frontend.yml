@@ -1,0 +1,141 @@
+name: Publish frontend
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+env:
+  REGISTRY: ghcr.io
+  REPOSITORY: {{GITHUB_REPOSITORY}}
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Diff against previous tag
+        id: diff
+        run: |
+          PREVIOUS=$(git describe --abbrev=0 --tags ${{ github.ref }}^ 2>/dev/null || true)
+          if [ -z "$PREVIOUS" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          CHANGED=$(git diff --name-only "$PREVIOUS".."${{ github.ref }}" -- apps/frontend pnpm-lock.yaml .github/workflows/frontend.yml | head -1)
+          if [ -n "$CHANGED" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish:
+    name: Publish image
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        node: [24]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Extract branch name
+        id: branch
+        run: |
+          NAME="${GITHUB_REF#refs/*/}"
+          echo "name=${NAME,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Build
+        env:
+          NUXT_APP_CDN_URL: ${{ vars.CDN_URL }}/${{ github.sha }}/
+          APP_URL: http://{{APP_NAME}}_backend:8000
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+          WEB_URL: ${{ vars.WEB_URL }}
+
+          REVERB_APP_KEY: ${{ secrets.REVERB_APP_KEY }}
+          REVERB_HOST: ${{ vars.REVERB_HOST }}
+          REVERB_PORT: ${{ vars.REVERB_PORT }}
+          REVERB_SCHEME: ${{ vars.REVERB_SCHEME }}
+
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: pnpm --filter "@{{APP_NAME}}/frontend" build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+
+      - name: Publish static assets to CDN
+        run: aws s3 sync apps/frontend/.output/public s3://${{ vars.AWS_ASSET_BUCKET }}/${{ github.sha }} --cache-control public,max-age=31536000,immutable --acl public-read
+
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-qemu-action@v3
+
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/frontend:${{ steps.branch.outputs.name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Notify Discord
+        uses: ./.github/actions/notify-discord
+        if: always()
+        with:
+          service: frontend
+          sha: ${{ github.sha }}
+          branch: ${{ steps.branch.outputs.name }}
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ env.REPOSITORY }}
+          app-name: ${{ vars.APP_NAME }}
+          app-env: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+          app-version: ${{ vars.APP_VERSION }}
+          discord-webhook-url: ${{ secrets.DISCORD_SERVER_WEBHOOK_URL }}
+          discord-user-id: ${{ secrets.DISCORD_USER_ID }}
