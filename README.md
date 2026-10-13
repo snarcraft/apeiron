@@ -13,6 +13,8 @@
   <img src="docs/badges.svg" alt="stack: laravel, nuxt, flutter · cloud: cloudflare, aws · ship: swarm, ghcr, app stores · humans + agents" width="1200">
 </p>
 
+> **In active development** — conventions, generated code and docs evolve quickly; expect sharp edges between releases. Built by professionals, for professionals: if operating Docker Swarm, AWS and CI pipelines yourself is not your comfort zone, this is not yet for you.
+
 ---
 
 <p align="center">
