@@ -50,3 +50,23 @@ manual ────► "Swarm up" (every release)
 | `deploy.sh` | pull + migrate-as-job + stack roll + wait |
 | `docker.sh` | host bootstrap (docker, swarm init, cluster net) |
 | `infra.sh` | deploy the infra stack |
+
+## Scaling
+
+Role-shaped, not instance-shaped — one image, `RUNNER` selects the temper:
+
+```bash
+docker service scale {{APP_NAME}}_backend=4    # api workers (octane)
+docker service scale {{APP_NAME}}_horizon=2    # queue workers
+```
+
+- **Vertical first**: Octane is hot in memory (coroutine I/O) — one
+  instance absorbs what php-fpm needs several for.
+- **Horizontal**: `docker swarm join` a second EC2 — overlay net,
+  placement, traefik re-converge. Horizon fits **Spot**: swarm
+  reschedules a killed node's replicas.
+- **No autoscaler daemon** by design: scale is a command or a
+  pipeline line; a small watchdog on queue depth / `docker stats`
+  automates it when needed.
+- Marketing + media never touch EC2 (S3/CDN), so compute scales
+  only with the app.

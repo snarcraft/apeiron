@@ -109,6 +109,28 @@ Classic PHP folds the framework after every request. Octane + Swoole boot once a
 
 Laravel with Node-class latency — on the same hardware, routinely faster.
 
+### ◈ Scaling — the cluster bill, skipped
+
+An AWS cluster bills you before the first request: ~$73/mo control plane, per-node fees, an ALB per environment, cross-AZ chatter inside the mesh. This platform runs **Docker Swarm straight on EC2** — Swarm ships inside Docker, so the only real bill is the instance.
+
+| | AWS cluster | EC2 + Swarm |
+|---|---|---|
+| Control plane | ~$73/mo | $0 — it's in Docker |
+| Load balancing | ALB per environment | Traefik on-host, Cloudflare DNS-01 |
+| Nodes | Managed groups, per-node fees | Plain EC2 · Spot for queue workers |
+| Ops surface | IAM per service · CNI · upgrades | One image · one stack file |
+
+Scaling is role-shaped, not instance-shaped — the same backend image, four tempers:
+
+```bash
+docker service scale {{APP_NAME}}_backend=4     # more api workers
+docker service scale {{APP_NAME}}_horizon=2     # more queue workers
+```
+
+Vertical first: Octane serves hot from memory with coroutine I/O, so one instance absorbs what php-fpm needs several for. Horizontal when you outgrow it — `docker swarm join` a second EC2 and the overlay network, placement and Traefik re-converge themselves; Horizon workers fit Spot instances perfectly, since Swarm simply reschedules a killed node's replicas.
+
+The honest trade: no built-in autoscaler daemon. Scaling is a command — or one line in the deploy pipeline — and a ~30-line watchdog on queue depth or `docker stats` makes it automatic the day you want that.
+
 ## ⬡ Permissions are code
 
 No roles tables. No permission seeders. No cache drift. Four string enums and one gate — the matrix _is_ the source of truth, mirrored to the frontend on the user payload, tested as a spec:
