@@ -74,7 +74,7 @@ Every generated website shares the same anatomy — hero → features → steps 
 Versions live in the manifests — `composer.json`, `package.json`, `pubspec.yaml` — and nowhere else; the prose stays evergreen. Five strata, one opinion each — the platform arises from the cloud substrate upward:
 
 <p align="center">
-  <img src="docs/stack.svg" alt="The stack in five strata — interfaces: flutter, nuxt web and webapp; api: laravel with octane, sanctum, pennant, horizon, reverb, pest; data: postgres, redis, s3; cloud: aws, cloudflare; ship: docker swarm, ghcr, actions, google play and testflight, loki, grafana, discord — worlds arise from the cloud substrate upward" width="1200">
+  <img src="docs/stack.svg" alt="The stack in five strata — interfaces: flutter, nuxt web and webapp; api: laravel with octane, sanctum, pennant, horizon, reverb, pest; data: aurora, redis, s3; cloud: aws, cloudflare; ship: docker swarm, ghcr, actions, app stores, loki, grafana, discord — worlds arise from the cloud substrate upward" width="1200">
 </p>
 
 ## ▲ The remote platform
