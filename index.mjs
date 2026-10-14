@@ -513,27 +513,48 @@ async function main() {
   }
 
   // github — with the master token the factory finishes the loop
-  // itself: repo created, code pushed, environments wired.
+  // itself: repo created, code pushed, environments wired. Every
+  // failure is captured and answered with one line — no cascades.
   if (a.secrets.GITHUB_ACCESS_TOKEN) {
     title('GitHub — repo + environments')
     const ghEnv = { ...process.env, GH_TOKEN: a.secrets.GITHUB_ACCESS_TOKEN }
-    try {
-      execSync(`gh repo create ${a.org}/${a.repo} --private --source . --push`, { cwd: target, stdio: 'inherit', env: ghEnv })
-      done(`github repo created and pushed — ${a.org}/${a.repo}`)
-    } catch {
+    const run = (cmd) => {
       try {
-        execSync('git remote add origin https://github.com/' + a.org + '/' + a.repo + '.git', { cwd: target, stdio: 'ignore' })
-        execSync('git push -u origin HEAD', { cwd: target, stdio: 'inherit', env: ghEnv })
-        done(`bound to existing repo — ${a.org}/${a.repo}`)
-      } catch {
-        fail(`could not create or bind ${a.org}/${a.repo} — create it, add the remote, push, then run node scripts/bootstrap.mjs`)
+        execSync(cmd, { cwd: target, stdio: 'pipe', env: ghEnv })
+        return null
+      } catch (error) {
+        return `${error.stderr || error.stdout || ''}`
       }
     }
-    try {
-      execSync('node scripts/bootstrap.mjs', { cwd: target, stdio: 'inherit', env: ghEnv })
-      done('environments wired — staging, production and mobile carry every secret')
-    } catch {
-      fail('bootstrap incomplete — re-run node scripts/bootstrap.mjs inside the project (idempotent)')
+
+    let repoOk = false
+    const created = run(`gh repo create ${a.org}/${a.repo} --private --source . --push`)
+
+    if (created && /401|Bad credentials/.test(created)) {
+      fail('GITHUB_ACCESS_TOKEN rejected — fix it in secrets/master.env, then run: node scripts/bootstrap.mjs')
+    } else if (created) {
+      run(`git remote add origin https://github.com/${a.org}/${a.repo}.git`)
+      const pushed = run('git push -u origin HEAD')
+      if (pushed && /401|Bad credentials/.test(pushed)) {
+        fail('GITHUB_ACCESS_TOKEN rejected — fix it in secrets/master.env, then run: node scripts/bootstrap.mjs')
+      } else if (pushed) {
+        fail(`could not create or push ${a.org}/${a.repo} — check the org and repo names, then: node scripts/bootstrap.mjs`)
+      } else {
+        done(`bound to existing repo — ${a.org}/${a.repo}`)
+        repoOk = true
+      }
+    } else {
+      done(`github repo created and pushed — ${a.org}/${a.repo}`)
+      repoOk = true
+    }
+
+    if (repoOk) {
+      try {
+        execSync('node scripts/bootstrap.mjs', { cwd: target, stdio: 'inherit', env: ghEnv })
+        done('environments wired — staging, production and mobile carry every secret')
+      } catch {
+        fail('bootstrap incomplete — re-run node scripts/bootstrap.mjs inside the project (idempotent)')
+      }
     }
   } else {
     note('no GITHUB_ACCESS_TOKEN — create the repo, push, then run:')

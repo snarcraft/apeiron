@@ -46,6 +46,19 @@ for (const file of ['secrets/master.env', envFile]) {
 const master = readEnv('secrets/master.env')
 const env = readEnv(envFile)
 
+// preflight — aws credentials via the signed api: fail fast with
+// one line instead of a provision-time cascade.
+if (master.AWS_ACCESS_KEY_ID && master.AWS_SECRET_ACCESS_KEY) {
+  const { aws } = await import('./lib/aws.mjs')
+  try {
+    const identity = await aws.callerIdentity(env.AWS_DEFAULT_REGION || 'eu-west-3')
+    console.log(`aws ok — account ${identity?.GetCallerIdentityResult?.Account ?? 'verified'}`)
+  } catch (error) {
+    console.error(`[fail] AWS credentials rejected — ${error.message}`)
+    process.exit(1)
+  }
+}
+
 const SECRET_RE = /KEY|SECRET|TOKEN|PASSWORD|PRIVATE/
 const MASTER_APP_KEYS = [
   'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY',
