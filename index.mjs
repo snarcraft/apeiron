@@ -21,7 +21,7 @@ import { resolve, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
 
-import { c, sym, hr, title, note, done, fail, text, confirm, select, multiselect, secret } from './lib/prompts.mjs'
+import { c, sym, hr, title, note, done, fail, text, confirm, select, multiselect, secret, gradient, live, liveEnd } from './lib/prompts.mjs'
 import { NAMED_HUES, scale, themeBlock, ansiRamp, ansiSwatch, toHex, suggestSecondaryHue, randomHuePair } from './lib/oklch.mjs'
 import { renderTree, writeGenerated } from './lib/render.mjs'
 import * as rbac from './lib/rbac.mjs'
@@ -57,21 +57,31 @@ if (args.help) {
 }
 
 if (args['list-souls']) {
+  const SOUL_BARS = {
+    aurora: [[152, 140, 255], [0, 180, 191]],
+    blueprint: [[122, 162, 255], [143, 211, 255]],
+    editorial: [[201, 185, 138], [232, 228, 255]],
+    neon: [[255, 78, 205], [0, 229, 255]],
+  }
   for (const [key, soul] of Object.entries(SOULS)) {
-    console.log(`${c.bold(soul.label.padEnd(11))} ${c.dim(key)} — ${soul.description}`)
+    const [from, to] = SOUL_BARS[key]
+    const bar = gradient('████████████████', from, to)
+    console.log(`${c.bold(soul.label.padEnd(11))} ${bar} ${c.dim(key)} — ${soul.description}`)
   }
   process.exit(0)
 }
 
 // ------------------------------------------------------------
-// banner
+// banner — the factory's own gradient (violet 286 → teal 202)
 // ------------------------------------------------------------
+const VIOLET = [152, 140, 255]
+const TEAL = [0, 180, 191]
+
 function banner() {
   console.log('')
-  console.log(c.bold(c.cyan('  ╭──────────────────────────────────────────────╮')))
-  console.log(c.bold(c.cyan('  │  ') + '◆  m o n o r e p e   s c a f f o l d e r     ' + c.bold(c.cyan('│'))))
-  console.log(c.bold(c.cyan('  ╰──────────────────────────────────────────────╯')))
-  console.log(c.dim('  Laravel · Nuxt · Flutter · AWS · Cloudflare · Swarm'))
+  console.log(`  ${gradient('ἄ π ε ι ρ ο ν', VIOLET, TEAL)}`)
+  console.log(c.dim('  the platform factory — laravel · nuxt · flutter'))
+  console.log(`  ${gradient('─'.repeat(46), VIOLET, TEAL)}`)
   console.log('')
 }
 
@@ -337,11 +347,17 @@ async function main() {
 
   title(`Scaffolding → ${c.bold(target)}`)
   const skipMobile = (rel) => !a.mobile && (rel.startsWith('apps/mobile') || rel.startsWith('secrets/mobile') || rel === join('.github', 'workflows', 'mobile.yml.tpl'))
+  let rendered = 0
+  const tick = (rel) => {
+    rendered += 1
+    live(`${c.cyan(sym.dot)} rendering ${c.bold(String(rendered))} files ${c.dim(`— ${rel}`)}`)
+  }
   const created = await renderTree({
     source: join(here, 'boilerplate'),
     target,
     tokens,
     skip: skipMobile,
+    log: tick,
   })
 
   // The agent knowledge base ships into every project.
@@ -349,11 +365,15 @@ async function main() {
     source: join(here, 'ai'),
     target: join(target, 'ai'),
     tokens,
+    log: (rel) => tick(`ai/${rel}`),
   })))
+  liveEnd()
   done(`${created.length} boilerplate files rendered`)
 
   // ----- generated files (beyond placeholder rendering) -----
+  let generated = 0
   const g = async (rel, content) => {
+    generated += 1
     await writeGenerated(join(target, rel), content)
   }
 
@@ -472,7 +492,21 @@ async function main() {
     }
   }
 
-  // summary
+  // ----- the birth card -----
+  const W = 46
+  const visible = (s) => s.replace(/\x1b\[[0-9;]*m/g, '')
+  const row = (s) => `  │  ${s}${' '.repeat(Math.max(0, W - visible(s).length))}│`
+  title('Born')
+  console.log(`  ${c.dim(`╭${'─'.repeat(W + 2)}╮`)}`)
+  console.log(row(c.bold(a.name.trim())))
+  console.log(row(c.dim(`${a.domain} · ${SOULS[a.soul].label} · hues ${Math.round(a.primaryHue)}/${Math.round(a.secondaryHue)}`)))
+  console.log(row(''))
+  console.log(row(`${ansiRamp(primary)}  ${c.dim('primary')}`))
+  console.log(row(`${ansiRamp(secondary)}  ${c.dim('secondary')}`))
+  console.log(row(''))
+  console.log(row(`${created.length + generated} files · ${groups.length} groups · ${roles.length} roles · ${features.length} features`))
+  console.log(`  ${c.dim(`╰${'─'.repeat(W + 2)}╯`)}`)
+
   title('Next steps')
   console.log(`  ${c.dim('1.')} cd ${join('.', relative(process.cwd(), target) || '.')} `)
   console.log(`  ${c.dim('2.')} pnpm install`)
@@ -484,7 +518,7 @@ async function main() {
   console.log(`  ${c.dim('agent entrypoint        → AGENTS.md')}`)
   console.log('')
   console.log(hr())
-  console.log(`  ${ansiSwatch(primary[500].rgb, '█')} ${c.bold(a.name.trim())} is ready. Make it real.`)
+  console.log(`  ${ansiSwatch(primary[500].rgb, '█')} ${c.bold(a.name.trim())} is ready — ${gradient('from the boundless, worlds.', VIOLET, TEAL)}`)
   console.log(hr())
   console.log('')
 }
