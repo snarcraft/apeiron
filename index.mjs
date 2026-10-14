@@ -217,10 +217,19 @@ async function ask() {
 
   a.gitInit = true
 
-  a.mobile = await confirm({
-    label: 'Include the Flutter mobile app? (scaffolded kernel, needs flutter to generate platforms)',
-    default: true,
-  })
+  // Mobile follows the store credentials — bring App Store or
+  // Play keys and the app ships, no question asked. Without them
+  // we ask: dev-only builds are still a legitimate choice.
+  const storeKeys = ['APP_STORE_ISSUER_ID', 'APP_STORE_KEY_ID', 'APP_STORE_PRIVATE_KEY', 'ANDROID_SERVICE_ACCOUNT']
+  if (storeKeys.some((key) => a.secrets[key])) {
+    done('store credentials detected — the mobile app ships')
+    a.mobile = true
+  } else {
+    a.mobile = await confirm({
+      label: 'Include the Flutter mobile app? (no store credentials given — dev builds only)',
+      default: true,
+    })
+  }
   if (a.mobile) {
     a.mobileOrg = await text({ label: 'Mobile reverse-domain org', default: `com.${a.org || a.slug}` })
   }
