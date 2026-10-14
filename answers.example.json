@@ -25,7 +25,8 @@
   "features": [
     "team",
     "user",
-    "contract"
+    "contract",
+    "agent"
   ],
   "primaryHue": 286,
   "secondaryHue": 202,

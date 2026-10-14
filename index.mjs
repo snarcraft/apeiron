@@ -127,15 +127,22 @@ async function ask() {
   if (!a.groups.length) {
     a.groups = ['client']
   }
-  a.roles = rbac.normalizeIdentifiers((await text({ label: 'Roles (comma-separated)', default: 'manager, member' })).split(','))
-  if (!a.roles.length) {
-    a.roles = ['manager', 'member']
-  }
+
+  a.roles = await multiselect({
+    label: 'Roles (within a group)',
+    options: Object.entries(rbac.ROLE_CATALOG)
+      .filter(([k]) => k !== 'admin')
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: k === 'manager' || k === 'member' })),
+    required: true,
+  })
+  const extraRoles = await text({ label: 'Custom roles (comma-separated)', default: '' })
+  a.roles = rbac.normalizeIdentifiers([...a.roles, ...extraRoles.split(',')])
+
   const featurePick = await multiselect({
-    label: 'Features (single lowercase words)',
+    label: 'Features',
     options: Object.entries(rbac.FEATURE_CATALOG)
       .filter(([, v]) => !v.locked)
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: ['team', 'user', 'contract'].includes(k) })),
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: ['team', 'user', 'contract', 'agent'].includes(k) })),
   })
   const extraFeatures = await text({ label: 'Custom features (comma-separated)', default: '' })
   // account, home and media are the platform spine — always present.
@@ -248,7 +255,7 @@ async function loadAnswers(file) {
     currency: 'EUR',
     groups: ['client'],
     roles: ['manager', 'member'],
-    features: ['account', 'home', 'team', 'user', 'contract'],
+    features: ['account', 'home', 'team', 'user', 'contract', 'agent'],
     primaryHue: 286,
     secondaryHue: null,
     soul: 'aurora',
@@ -267,9 +274,9 @@ async function loadAnswers(file) {
   if (a.secondaryHue === null) a.secondaryHue = suggestSecondaryHue(a.primaryHue)
   a.groups = rbac.normalizeIdentifiers(['operator', ...a.groups])
   a.roles = rbac.normalizeIdentifiers(['admin', ...a.roles])
-  // The platform spine — media, realtime and the agent surface are
-  // always present, never choices.
-  a.features = rbac.normalizeIdentifiers(['account', 'home', 'media', 'agent', ...a.features]).sort()
+  // The platform spine — media and realtime surfaces are always
+  // present, never choices; agent ships with the default answers.
+  a.features = rbac.normalizeIdentifiers(['account', 'home', 'media', ...a.features]).sort()
   return a
 }
 
