@@ -1,12 +1,12 @@
 {
-  "name": "apeiron",
+  "name": "artiste",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "ἄπειρον — the platform factory: one boundless source, every platform you will ever build. Zero dependencies.",
   "type": "module",
   "main": "index.mjs",
   "bin": {
-    "apeiron": "index.mjs"
+    "artiste": "index.mjs"
   },
   "engines": {
     "node": ">=20"
