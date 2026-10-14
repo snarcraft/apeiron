@@ -1,4 +1,4 @@
-name: Swarm up
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -6,23 +6,46 @@ on:
     branches:
       - main
     tags:
-      - '*'
+      - 'v*'
 
-# main → staging · tags → production. Waits for the publish
-# workflows to have pushed the images before rolling the stack.
+# The whole train, hands-off: main pushes roll staging (the
+# first one provisions AWS + DNS + the host — idempotent after),
+# tags roll production. Publish workflows build the images;
+# deploy.sh waits for them before pulling.
 
 concurrency:
   group: deploy
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Deploy stack
+  provision:
+    name: Provision (idempotent)
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: read
-    environment: ${{ github.ref_name == 'main' && 'staging' || (github.ref_name == 'production' && 'production' || 'development') }}
+    environment: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Provision AWS + Cloudflare + host
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          PIPELINE_ENV: ${{ github.ref_name == 'main' && 'staging' || 'production' }}
+        run: node scripts/provision.mjs --apply --github --bootstrap --envs "$PIPELINE_ENV"
+
+  deploy:
+    name: Deploy stack
+    needs: provision
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    environment: ${{ github.ref_name == 'main' && 'staging' || (startsWith(github.ref, 'refs/tags/') && 'production' || 'development') }}
     strategy:
       matrix:
         node: [24]

@@ -230,10 +230,9 @@ async function ask() {
     a.mobileOrg = await text({ label: 'Mobile reverse-domain org', default: `com.${a.org || a.slug}` })
   }
 
-  a.provision = await confirm({
-    label: 'Provision AWS + DNS now? (buckets, IAM users, EC2 per env, Cloudflare records — needs aws CLI)',
-    default: false,
-  })
+  // Provisioning is not an onboarding concern: the pipeline
+  // provisions AWS + Cloudflare + the host on the first push to
+  // main (idempotent on every later one). See deploy.yml.
   return a
 }
 
@@ -261,7 +260,6 @@ async function loadAnswers(file) {
     soul: 'aurora',
     secrets: {},
     gitInit: true,
-    provision: false,
     mobile: true,
     mobileOrg: null,
     out: null,
@@ -511,21 +509,6 @@ async function main() {
       done('git repository initialized')
     } catch {
       fail('git init failed — run it manually')
-    }
-  }
-
-  // ----- optional one-shot cloud provisioning -----
-  if (a.provision) {
-    title('Provisioning AWS + DNS')
-    const env = {
-      ...process.env,
-      CF_DNS_API_TOKEN: a.secrets.CF_DNS_API_TOKEN || process.env.CF_DNS_API_TOKEN || '',
-    }
-    try {
-      execSync('node scripts/provision.mjs --apply', { cwd: target, stdio: 'inherit', env })
-      done('cloud resources provisioned (idempotent — re-runnable)')
-    } catch {
-      fail('provisioning incomplete — run `node scripts/provision.mjs --apply` inside the project (idempotent)')
     }
   }
 

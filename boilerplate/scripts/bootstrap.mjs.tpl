@@ -89,6 +89,17 @@ for (const k of MASTER_APP_KEYS) {
   secrets += 1
 }
 
+// master keys ride both deploy environments — main pushes roll
+// staging, tags roll production. One bootstrap arms both.
+if (target === 'staging') {
+  for (const k of MASTER_APP_KEYS) {
+    if (!master[k]) continue
+    guard(() => github.secret(k, master[k], 'production'))
+    console.log(`secret production/${k} (master)`)
+    secrets += 1
+  }
+}
+
 for (const k of STORE_KEYS) {
   if (!master[k]) continue
   guard(() => github.secret(k, master[k], 'mobile'))

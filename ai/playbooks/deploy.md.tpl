@@ -1,58 +1,31 @@
 # Playbook — deploy
 
-## Prerequisites (once)
+## One-time
 
-`docs/SECRETS.md` walks the full provisioning (AWS buckets, IAM,
-GitHub vars/secrets, EC2 host). Then:
+`node scripts/bootstrap.mjs` (after the GitHub repo exists) pushes
+the master credentials, the generated passwords and the derived
+Stripe webhook into GitHub environments — staging, production and
+mobile in one run. `docs/SECRETS.md` covers any value bootstrap
+cannot know (server PEM of an existing host, signing materials).
 
-1. **Infrastructure up** (GitHub Actions, manual) — bootstraps the
-   host, Swarm, Traefik, Postgres, Redis, observability.
-2. **Swarm up** (GitHub Actions, manual) — creates versioned
-   configs/secrets and rolls the app stack.
+## The train
 
-## Release
-
-```bash
-# 1. bump the version variable (immutable config names depend on it)
-gh variable set APP_VERSION --body "1.1.0" --env production
-
-# 2. tag (publish workflows only run on tags)
-git tag v1.1.0 && git push origin v1.1.0
-
-# 3. wait for backend/frontend/web publishes (change-detected —
-#    unchanged apps skip), then: Actions → Swarm up
-```
-
-`deploy.sh` on the host: pulls images, runs `migrate --force` and
-`inspire` as one-off swarm jobs, rolls the stack, waits for
-replicas, prunes old images. Discord gets a ping either way.
-
-## Stores
-
-Mobile publishes itself — no certificates on laptops, no Xcode.
-The `mobile` workflow signs and uploads every tag to **Google
-Play** (internal track) and **TestFlight**. Store credentials live
-in the `mobile` environment (`docs/SECRETS.md`); once they're set,
-releases are fully hands-off.
-
-## Environments
-
-- branch `main` → staging (`server/staging.yml`, `staging.` hosts)
-- any other ref (workflow_dispatch on a branch/tag) → production
-- `development` env exists for ephemeral branch deploys
+- **push to `main`** → the Deploy workflow provisions (idempotent:
+  buckets, IAM, EC2, Cloudflare records, host bootstrap — a fast
+  re-check once resources exist) and rolls **staging** on the
+  prefixed domains: `staging.<domain>`, `app.staging.<domain>`,
+  `socket.staging.<domain>`, `*.staging.<domain>`
+- **push a `v*` tag** → **production** rolls, no prefix domains
+- deploy.sh waits for the publish workflows' images before pulling
+- rollback: `docker service update --image …:v1.0.9 <stack>_backend`
+  or re-run swarm.sh with the old `APP_VERSION` (immutable objects)
 
 ## Rollback
-
-Images are tagged by branch name; the previous tag's images are
-still on the host until pruned:
 
 ```bash
 ssh ubuntu@host
 docker service update --image ghcr.io/{{APP_ORG}}/{{APP_REPO}}/backend:v1.0.9 {{APP_NAME}}_backend
 ```
-
-Config rollbacks: re-run swarm.sh with the old `APP_VERSION` —
-versioned objects are immutable, both versions coexist.
 
 ## Local parity
 

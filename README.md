@@ -198,7 +198,7 @@ make codegen    # freezed · json · router codegen, watch mode
 make mobile     # the app, against the same backend
 ```
 
-Push a tag → images publish to GHCR → the Swarm rolls → Play and TestFlight get their builds → Discord pings. That's the whole release train.
+Push to `main` → staging rolls — the first push provisions everything (AWS, Cloudflare, the host: idempotent on every later one). Push a `v*` tag → production, no prefix domains. Both stores get their builds. Discord pings. That's the whole release train.
 
 ## ◆ The map
 

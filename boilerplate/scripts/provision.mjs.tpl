@@ -337,7 +337,16 @@ for (const env of envs) {
 for (const line of ghLines) {
   const command = `gh ${line.kind === 'secret' ? 'secret' : 'variable'} set ${line.key} --env ${line.env}`
   if (args.github && args.apply) {
-    if (line.value?.startsWith('contents of')) {
+    if (line.key === 'SERVER_KEY') {
+      // key material is multi-line — stdin, never --body
+      const keyFile = join(root, 'secrets', `id_rsa_${line.env}`)
+      if (existsSync(keyFile)) {
+        console.log(`  \x1b[36m+\x1b[0m ${command}`)
+        sh(`gh secret set SERVER_KEY --env ${line.env} < ${keyFile}`)
+      } else {
+        console.log(`  \x1b[2m○ ${command}  # key file missing — host reused, secret already set\x1b[0m`)
+      }
+    } else if (line.value?.startsWith('contents of')) {
       console.log(`  \x1b[2m○ ${command}  # ${line.value}\x1b[0m`)
     } else {
       console.log(`  \x1b[36m+\x1b[0m ${command}`)
@@ -375,6 +384,11 @@ if (args.bootstrap && args.apply) {
       const gfPassword = execFileSync('openssl', ['rand', '-base64', '24'], { encoding: 'utf8' }).trim()
       saveSecret(`DB_PASSWORD_${env.toUpperCase()}`, dbPassword)
       saveSecret(`REDIS_PASSWORD_${env.toUpperCase()}`, redisPassword)
+      if (args.github) {
+        sh(`gh secret set DB_PASSWORD --env ${env} --body "${dbPassword}"`)
+        sh(`gh secret set REDIS_PASSWORD --env ${env} --body "${redisPassword}"`)
+        console.log(`  \x1b[36m+\x1b[0m gh secret set DB_PASSWORD/REDIS_PASSWORD --env ${env}`)
+      }
 
       ssh(`cd ~/{{APP_NAME}} && sudo -E bash ./docker.sh`)
       ssh(`cd ~/{{APP_NAME}} && VAR_DB_PASSWORD='${dbPassword}' VAR_REDIS_PASSWORD='${redisPassword}' VAR_GF_SECURITY_ADMIN_PASSWORD='${gfPassword}' bash ./infra.sh || true`)
