@@ -59,7 +59,7 @@ You answer five questions. A complete, deployed, branded platform answers back.
 
 > **▲** _secrets_
 
-**A cloud** — an idempotent AWS provisioner: buckets, IAM users, EC2 per environment, Cloudflare DNS — and a ready-to-run `gh` checklist for the day you go live.
+**A cloud** — an idempotent AWS provisioner: buckets, IAM users, EC2 per environment, Cloudflare DNS — and one command pushes every derived secret to GitHub for you.
 
 ## ✦ Four souls, one skeleton
 

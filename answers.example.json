@@ -31,14 +31,17 @@
   "secondaryHue": 202,
   "soul": "aurora",
   "secrets": {
+    "AWS_ACCESS_KEY_ID": "",
+    "AWS_SECRET_ACCESS_KEY": "",
+    "CF_DNS_API_TOKEN": "",
+    "DISCORD_BOT_TOKEN": "",
+    "GITHUB_ACCESS_TOKEN": "",
     "STRIPE_KEY": "",
     "STRIPE_SECRET": "",
-    "STRIPE_WEBHOOK_SECRET": "",
-    "DISCORD_CONTACT_WEBHOOK_URL": "",
-    "DISCORD_USER_ID": "",
-    "CF_DNS_API_TOKEN": "",
-    "DB_PASSWORD": "",
-    "REDIS_PASSWORD": ""
+    "APP_STORE_ISSUER_ID": "",
+    "APP_STORE_KEY_ID": "",
+    "APP_STORE_PRIVATE_KEY": "",
+    "ANDROID_SERVICE_ACCOUNT": ""
   },
   "gitInit": true,
   "out": "../aurora"

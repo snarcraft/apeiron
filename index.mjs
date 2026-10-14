@@ -20,6 +20,7 @@ import process from 'node:process'
 import { resolve, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execSync } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
 
 import { c, sym, hr, title, note, done, fail, text, confirm, select, multiselect, secret, gradient, live, liveEnd } from './lib/prompts.mjs'
 import { NAMED_HUES, scale, themeBlock, ansiRamp, ansiSwatch, toHex, suggestSecondaryHue, randomHuePair } from './lib/oklch.mjs'
@@ -190,15 +191,20 @@ async function ask() {
   })
   a.soul = soul
 
-  title('Integrations')
-  note('Stripe · Reverb · S3 media · Discord · Laravel AI — the full platform ships always, no toggles.')
-  note('Secrets are asked, never optional — enter to keep the placeholder for any you do not have yet.')
+  title('Master credentials — everything else is derived')
+  note('Eleven keys with API powers. From these the platform provisions and')
+  note('operates itself — AWS admin, Cloudflare DNS, a Discord bot, Stripe,')
+  note('the stores — and a GitHub token to push every derived secret for you.')
+  note('Enter to skip any; they also live in secrets/master.env afterwards.')
   a.secrets = {}
   const keys = [
-    'STRIPE_KEY', 'STRIPE_SECRET', 'STRIPE_WEBHOOK_SECRET',
     'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY',
-    'DISCORD_CONTACT_WEBHOOK_URL', 'DISCORD_USER_ID',
-    'CF_DNS_API_TOKEN', 'DB_PASSWORD', 'REDIS_PASSWORD',
+    'CF_DNS_API_TOKEN',
+    'DISCORD_BOT_TOKEN',
+    'GITHUB_ACCESS_TOKEN',
+    'STRIPE_KEY', 'STRIPE_SECRET',
+    'APP_STORE_ISSUER_ID', 'APP_STORE_KEY_ID', 'APP_STORE_PRIVATE_KEY',
+    'ANDROID_SERVICE_ACCOUNT',
   ]
   for (const key of keys) {
     a.secrets[key] = await secret({ label: key })
@@ -334,6 +340,12 @@ async function main() {
     a = await ask()
   }
 
+  // Generated credentials — never asked, never in git: passwords for
+  // the local stack and the first staging roll are minted here and
+  // ride secrets/*.env (git-ignored) up to GitHub via push-secrets.
+  a.secrets.DB_PASSWORD ||= randomBytes(18).toString('base64url')
+  a.secrets.REDIS_PASSWORD ||= randomBytes(18).toString('base64url')
+
   const { primary, secondary, groups, roles, features, matrix, tokens } = derive(a)
 
   // palette preview — the wow moment
@@ -401,8 +413,14 @@ async function main() {
 
   await g('apps/backend/composer.json', builders.composerJson(ctx))
   await g('apps/backend/.env.example', builders.backendEnvExample(a))
+  await g('secrets/master.env', builders.masterEnv(a))
   await g('secrets/local.env', builders.secretsEnv({ kind: 'local', ...ctx, values: a.secrets, locales: a.locales }))
-  await g('secrets/staging.env', builders.secretsEnv({ kind: 'staging', ...ctx, values: {}, locales: a.locales }))
+  await g('secrets/staging.env', builders.secretsEnv({
+    kind: 'staging',
+    ...ctx,
+    values: { DB_PASSWORD: a.secrets.DB_PASSWORD, REDIS_PASSWORD: a.secrets.REDIS_PASSWORD },
+    locales: a.locales,
+  }))
   await g('docs/SECRETS.md', builders.secretsDoc({ org: a.org, repo: a.repo, ...ctx }))
   await g('README.md', builders.projectReadme({ org: a.org, repo: a.repo, ...ctx }))
   await g('assets/icon.svg', builders.monogramSvg({ letter: a.slug[0], primary500: primary[500], secondary500: secondary[500] }))

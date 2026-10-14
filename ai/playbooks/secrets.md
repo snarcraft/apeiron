@@ -2,12 +2,14 @@
 
 **Rule: no secret is ever committed.** `secrets/` self-ignores;
 values live in GitHub environments (CI) and Docker secrets
-(runtime).
+(runtime). DB and redis passwords are generated at scaffold —
+never asked, never typed.
 
 ## Where secrets live
 
 | Layer | Store |
 |---|---|
+| master credentials | `secrets/master.env` (git-ignored) → GitHub via `node scripts/push-secrets.mjs` |
 | local dev | `secrets/local.env` (git-ignored) |
 | staging/production CI | GitHub environments `staging` / `production` |
 | runtime | Docker secrets, versioned `${app}.${env}.${version}.<NAME>` |
