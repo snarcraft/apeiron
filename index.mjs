@@ -505,11 +505,39 @@ async function main() {
 
   if (a.gitInit) {
     try {
-      execSync(`git init -q && git add -A`, { cwd: target, stdio: 'ignore' })
+      execSync(`git init -q && git add -A && git commit -qm "feat: born from apeiron"`, { cwd: target, stdio: 'ignore' })
       done('git repository initialized')
     } catch {
       fail('git init failed — run it manually')
     }
+  }
+
+  // github — with the master token the factory finishes the loop
+  // itself: repo created, code pushed, environments wired.
+  if (a.secrets.GITHUB_ACCESS_TOKEN) {
+    title('GitHub — repo + environments')
+    const ghEnv = { ...process.env, GH_TOKEN: a.secrets.GITHUB_ACCESS_TOKEN }
+    try {
+      execSync(`gh repo create ${a.org}/${a.repo} --private --source . --push`, { cwd: target, stdio: 'inherit', env: ghEnv })
+      done(`github repo created and pushed — ${a.org}/${a.repo}`)
+    } catch {
+      try {
+        execSync('git remote add origin https://github.com/' + a.org + '/' + a.repo + '.git', { cwd: target, stdio: 'ignore' })
+        execSync('git push -u origin HEAD', { cwd: target, stdio: 'inherit', env: ghEnv })
+        done(`bound to existing repo — ${a.org}/${a.repo}`)
+      } catch {
+        fail(`could not create or bind ${a.org}/${a.repo} — create it, add the remote, push, then run node scripts/bootstrap.mjs`)
+      }
+    }
+    try {
+      execSync('node scripts/bootstrap.mjs', { cwd: target, stdio: 'inherit', env: ghEnv })
+      done('environments wired — staging, production and mobile carry every secret')
+    } catch {
+      fail('bootstrap incomplete — re-run node scripts/bootstrap.mjs inside the project (idempotent)')
+    }
+  } else {
+    note('no GITHUB_ACCESS_TOKEN — create the repo, push, then run:')
+    note('node scripts/bootstrap.mjs   # sets every GitHub secret from secrets/master.env')
   }
 
   // ----- the birth card -----
