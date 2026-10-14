@@ -123,13 +123,18 @@ async function ask() {
 
   title('Access model — groups, roles, features')
   note('operator + admin are always included (platform staff, bypasses every gate).')
-  a.groups = await multiselect({
+  note('Groups start empty — enter accepts client as the default.')
+  const groupPick = await multiselect({
     label: 'Groups (tenant kinds)',
     options: Object.entries(rbac.GROUP_CATALOG)
       .filter(([k]) => k !== 'operator')
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: k === 'client' })),
-    required: true,
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
+    required: false,
   })
+  a.groups = groupPick.length ? groupPick : ['client']
+  if (!groupPick.length) {
+    note('no groups chosen — client it is.')
+  }
   a.roles = await multiselect({
     label: 'Roles (within a group)',
     options: Object.entries(rbac.ROLE_CATALOG)
@@ -141,7 +146,7 @@ async function ask() {
     label: 'Features (single lowercase words)',
     options: Object.entries(rbac.FEATURE_CATALOG)
       .filter(([, v]) => !v.locked)
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: ['team', 'user', 'invoice'].includes(k) })),
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: ['team', 'user', 'contract'].includes(k) })),
   })
   const extraFeatures = await text({ label: 'Custom features (comma-separated)', default: '' })
   // account, home and media are the platform spine — always present.
@@ -245,7 +250,7 @@ async function loadAnswers(file) {
     currency: 'EUR',
     groups: ['client'],
     roles: ['manager', 'member'],
-    features: ['account', 'home', 'team', 'user', 'invoice'],
+    features: ['account', 'home', 'team', 'user', 'contract'],
     primaryHue: 286,
     secondaryHue: null,
     soul: 'aurora',
