@@ -123,25 +123,14 @@ async function ask() {
 
   title('Access model — groups, roles, features')
   note('operator + admin are always included (platform staff, bypasses every gate).')
-  note('Groups start empty — enter accepts client as the default.')
-  const groupPick = await multiselect({
-    label: 'Groups (tenant kinds)',
-    options: Object.entries(rbac.GROUP_CATALOG)
-      .filter(([k]) => k !== 'operator')
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
-    required: false,
-  })
-  a.groups = groupPick.length ? groupPick : ['client']
-  if (!groupPick.length) {
-    note('no groups chosen — client it is.')
+  a.groups = rbac.normalizeIdentifiers((await text({ label: 'Groups (comma-separated)', default: 'client' })).split(','))
+  if (!a.groups.length) {
+    a.groups = ['client']
   }
-  a.roles = await multiselect({
-    label: 'Roles (within a group)',
-    options: Object.entries(rbac.ROLE_CATALOG)
-      .filter(([k]) => k !== 'admin')
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: k === 'manager' || k === 'member' })),
-    required: true,
-  })
+  a.roles = rbac.normalizeIdentifiers((await text({ label: 'Roles (comma-separated)', default: 'manager, member' })).split(','))
+  if (!a.roles.length) {
+    a.roles = ['manager', 'member']
+  }
   const featurePick = await multiselect({
     label: 'Features (single lowercase words)',
     options: Object.entries(rbac.FEATURE_CATALOG)
