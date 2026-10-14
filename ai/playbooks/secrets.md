@@ -9,7 +9,7 @@ never asked, never typed.
 
 | Layer | Store |
 |---|---|
-| master credentials | `secrets/master.env` (git-ignored) → GitHub via `node scripts/push-secrets.mjs` |
+| master credentials | `secrets/master.env` (git-ignored) → GitHub via `node scripts/bootstrap.mjs` |
 | local dev | `secrets/local.env` (git-ignored) |
 | staging/production CI | GitHub environments `staging` / `production` |
 | runtime | Docker secrets, versioned `${app}.${env}.${version}.<NAME>` |

@@ -210,7 +210,7 @@ async function ask() {
     a.secrets[key] = await secret({ label: key })
   }
 
-  a.gitInit = await confirm({ label: 'git init the project?', default: true })
+  a.gitInit = true
 
   a.mobile = await confirm({
     label: 'Include the Flutter mobile app? (scaffolded kernel, needs flutter to generate platforms)',
@@ -250,7 +250,7 @@ async function loadAnswers(file) {
     secondaryHue: null,
     soul: 'aurora',
     secrets: {},
-    gitInit: false,
+    gitInit: true,
     provision: false,
     mobile: true,
     mobileOrg: null,
@@ -340,11 +340,14 @@ async function main() {
     a = await ask()
   }
 
-  // Generated credentials — never asked, never in git: passwords for
-  // the local stack and the first staging roll are minted here and
-  // ride secrets/*.env (git-ignored) up to GitHub via push-secrets.
+  // Generated credentials — never asked, never in git: passwords,
+  // the app key and the reverb pair are minted here and ride
+  // secrets/*.env (git-ignored) up to GitHub via bootstrap.
   a.secrets.DB_PASSWORD ||= randomBytes(18).toString('base64url')
   a.secrets.REDIS_PASSWORD ||= randomBytes(18).toString('base64url')
+  a.secrets.APP_KEY ||= 'base64:' + randomBytes(32).toString('base64')
+  a.secrets.REVERB_APP_KEY ||= randomBytes(16).toString('hex')
+  a.secrets.REVERB_APP_SECRET ||= randomBytes(16).toString('hex')
 
   const { primary, secondary, groups, roles, features, matrix, tokens } = derive(a)
 
@@ -418,7 +421,13 @@ async function main() {
   await g('secrets/staging.env', builders.secretsEnv({
     kind: 'staging',
     ...ctx,
-    values: { DB_PASSWORD: a.secrets.DB_PASSWORD, REDIS_PASSWORD: a.secrets.REDIS_PASSWORD },
+    values: {
+      APP_KEY: a.secrets.APP_KEY,
+      DB_PASSWORD: a.secrets.DB_PASSWORD,
+      REDIS_PASSWORD: a.secrets.REDIS_PASSWORD,
+      REVERB_APP_KEY: a.secrets.REVERB_APP_KEY,
+      REVERB_APP_SECRET: a.secrets.REVERB_APP_SECRET,
+    },
     locales: a.locales,
   }))
   await g('docs/SECRETS.md', builders.secretsDoc({ org: a.org, repo: a.repo, ...ctx }))
@@ -486,7 +495,7 @@ async function main() {
   }
   note('run `pnpm generate:assets` after install to mint PWA icons from assets/icon.svg')
 
-  if (a.gitInit && !args.answers) {
+  if (a.gitInit) {
     try {
       execSync(`git init -q && git add -A`, { cwd: target, stdio: 'ignore' })
       done('git repository initialized')

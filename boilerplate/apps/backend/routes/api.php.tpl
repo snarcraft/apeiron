@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TokenAuthenticationController;
 use App\Http\Controllers\TranslationController;
@@ -17,6 +18,9 @@ Route::get('settings', SettingsController::class)->name('settings');
 Route::post('contacts', ContactController::class)->middleware('throttle:contact')->name('contacts');
 
 Route::post('auth/token', [TokenAuthenticationController::class, 'store']);
+
+// Registered by scripts/bootstrap.mjs — signature-verified, no session.
+Route::post('stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('auth/token', [TokenAuthenticationController::class, 'destroy']);
