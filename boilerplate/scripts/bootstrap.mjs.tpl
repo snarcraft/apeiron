@@ -51,7 +51,10 @@ const env = readEnv(envFile)
 if (master.AWS_ACCESS_KEY_ID && master.AWS_SECRET_ACCESS_KEY) {
   const { aws } = await import('./lib/aws.mjs')
   try {
-    const identity = await aws.callerIdentity(env.AWS_DEFAULT_REGION || 'eu-west-3')
+    const identity = await aws.callerIdentity(env.AWS_DEFAULT_REGION || 'eu-west-3', {
+      accessKeyId: master.AWS_ACCESS_KEY_ID,
+      secretAccessKey: master.AWS_SECRET_ACCESS_KEY,
+    })
     console.log(`aws ok — account ${identity?.GetCallerIdentityResult?.Account ?? 'verified'}`)
   } catch (error) {
     console.error(`[fail] AWS credentials rejected — ${error.message}`)

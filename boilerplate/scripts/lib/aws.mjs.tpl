@@ -9,9 +9,9 @@ import { createHmac, createHash } from 'node:crypto'
 
 const encode = (s) => encodeURIComponent(String(s)).replace(/[!'()*]/g, (ch) => '%' + ch.charCodeAt(0).toString(16).toUpperCase())
 
-async function awsFetch({ service, region, method = 'GET', path = '/', query = {}, body = '', headers = {} }) {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+async function awsFetch({ service, region, method = 'GET', path = '/', query = {}, body = '', headers = {}, credentials = {} }) {
+  const accessKeyId = credentials.accessKeyId || process.env.AWS_ACCESS_KEY_ID
+  const secretAccessKey = credentials.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY
 
   if (!accessKeyId || !secretAccessKey) {
     throw new Error('aws credentials missing — set AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY')
@@ -57,8 +57,8 @@ async function awsFetch({ service, region, method = 'GET', path = '/', query = {
 
 export const aws = {
   // "who am I" — the credential preflight
-  callerIdentity: (region) =>
-    awsFetch({ service: 'sts', region, query: { Action: 'GetCallerIdentity', Version: '2011-06-15' } }),
+  callerIdentity: (region, credentials) =>
+    awsFetch({ service: 'sts', region, credentials, query: { Action: 'GetCallerIdentity', Version: '2011-06-15' } }),
 
   // extend here as actions need more: ec2 describe, s3 head, iam get-user…
   request: awsFetch,
