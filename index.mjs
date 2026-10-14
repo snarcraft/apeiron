@@ -132,7 +132,7 @@ async function ask() {
     label: 'Roles (within a group)',
     options: Object.entries(rbac.ROLE_CATALOG)
       .filter(([k]) => k !== 'admin')
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: k === 'manager' || k === 'member' })),
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
     required: true,
   })
   const extraRoles = await text({ label: 'Custom roles (comma-separated)', default: '' })
@@ -142,7 +142,7 @@ async function ask() {
     label: 'Features',
     options: Object.entries(rbac.FEATURE_CATALOG)
       .filter(([, v]) => !v.locked)
-      .map(([k, v]) => ({ label: k, value: k, hint: v.hint, checked: ['team', 'user', 'contract', 'agent'].includes(k) })),
+      .map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
   })
   const extraFeatures = await text({ label: 'Custom features (comma-separated)', default: '' })
   // account, home and media are the platform spine — always present.
