@@ -541,6 +541,9 @@ async function main() {
   console.log(`  ${ansiSwatch(primary[500].rgb, '█')} ${c.bold(a.name.trim())} is ready — ${gradient('from the boundless, worlds.', VIOLET, TEAL)}`)
   console.log(hr())
   console.log('')
+
+  // Raw-mode prompts leave stdin flowing; the exit is ours to call.
+  process.exit(0)
 }
 
 main().catch((error) => {
