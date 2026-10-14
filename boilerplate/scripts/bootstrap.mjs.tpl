@@ -60,14 +60,23 @@ const STORE_KEYS = [
 let vars = 0
 let secrets = 0
 
+const guard = (run) => {
+  try {
+    run()
+  } catch {
+    console.error('[fail] gh could not reach the repository — add a remote (git remote add origin OWNER/REPO.git) or export GH_REPO=owner/name, then re-run. Idempotent: nothing is half-pushed that a re-run cannot finish.')
+    process.exit(1)
+  }
+}
+
 for (const [k, v] of Object.entries(env)) {
   if (!v || v.includes('REPLACE_ME')) continue
   if (SECRET_RE.test(k)) {
-    await github.secret(k, v, target)
+    guard(() => github.secret(k, v, target))
     console.log(`secret ${target}/${k}`)
     secrets += 1
   } else {
-    await github.variable(k, v, target)
+    guard(() => github.variable(k, v, target))
     console.log(`var    ${target}/${k}`)
     vars += 1
   }
@@ -75,14 +84,14 @@ for (const [k, v] of Object.entries(env)) {
 
 for (const k of MASTER_APP_KEYS) {
   if (!master[k]) continue
-  await github.secret(k, master[k], target)
+  guard(() => github.secret(k, master[k], target))
   console.log(`secret ${target}/${k} (master)`)
   secrets += 1
 }
 
 for (const k of STORE_KEYS) {
   if (!master[k]) continue
-  await github.secret(k, master[k], 'mobile')
+  guard(() => github.secret(k, master[k], 'mobile'))
   console.log(`secret mobile/${k} (master)`)
   secrets += 1
 }
