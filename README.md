@@ -170,11 +170,16 @@ An agent that has never seen your project can add a feature end-to-end by readin
 ## ▲ Quickstart
 
 ```bash
-git clone https://github.com/snarcraft/apeiron.git && cd apeiron
+pnpm dlx artiste          # interactive — one hex in, a platform out (or: npx artiste)
+pnpm dlx artiste --list-souls                    # meet the four souls
+pnpm dlx artiste --answers answers.json --out ../my-next-business
+```
 
-node .                                 # interactive — palette preview in your terminal
-node . --list-souls                    # meet the four souls
-node . --answers answers.example.json --out ../my-next-business
+Working on the factory itself — clone and run it directly:
+
+```bash
+git clone https://github.com/snarcraft/apeiron.git && cd apeiron
+node .                   # same factory, from source
 ```
 
 Then, inside the newborn platform:

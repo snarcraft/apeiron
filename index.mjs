@@ -4,13 +4,15 @@
 // index.mjs — interactive project scaffolder
 // ============================================================
 // Renders a full monorepo from the answers to a few questions:
-// identity → domains → RBAC (groups/roles/features) → palette →
-// design soul → integrations → secrets. Zero dependencies.
+// services → identity → RBAC (groups/roles/features) → palette
+// (one hex) → design soul → typeface → master credentials.
+// Zero dependencies.
 //
-//   node .                        interactive
-//   node . --answers a.json       non-interactive (agents)
-//   node . --out ../acme          target directory
-//   node . --list-souls           show design souls
+//   npx artiste                       interactive (published)
+//   pnpm dlx artiste                  same, via pnpm
+//   node .                            from a clone of this repo
+//   node . --answers a.json           non-interactive (agents)
+//   node . --list-souls               show design souls
 //
 // Node >= 20 required.
 
