@@ -28,8 +28,9 @@
     "contract",
     "agent"
   ],
-  "primaryHue": 286,
+  "primaryHex": "#988cff",
   "secondaryHue": 202,
+  "font": "Inter",
   "soul": "aurora",
   "services": {
     "website": true,

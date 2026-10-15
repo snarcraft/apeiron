@@ -24,7 +24,7 @@ import { execSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 
 import { c, sym, hr, title, note, done, fail, text, confirm, select, multiselect, secret, gradient, live, liveEnd } from './lib/prompts.mjs'
-import { NAMED_HUES, scale, themeBlock, ansiRamp, ansiSwatch, toHex, suggestSecondaryHue, randomHuePair } from './lib/oklch.mjs'
+import { scale, themeBlock, ansiRamp, ansiSwatch, toHex, suggestSecondaryHue, hexToOklchHue } from './lib/oklch.mjs'
 import { renderTree, writeGenerated } from './lib/render.mjs'
 import * as rbac from './lib/rbac.mjs'
 import * as builders from './lib/builders.mjs'
@@ -178,42 +178,17 @@ async function ask() {
     a.services.api = true
   }
 
-  title('Palette — generated, perceptual, yours')
-  const namedEntries = Object.entries(NAMED_HUES)
-  const primaryChoice = await select({
-    label: 'Primary color',
-    options: [
-      ...namedEntries.map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
-      { label: 'surprise me', value: '__random__', hint: 'a curated random pair' },
-      { label: 'custom hue', value: '__custom__', hint: '0–360 oklch hue number' },
-    ],
-    defaultIndex: 0,
+  title('Palette — one color in, a system out')
+  note('give the primary as hex — the full 50–950 scale, contrast, dark and light')
+  note('handling, and a compatible secondary are all derived. no swatch books.')
+  const primaryHexAnswer = await text({
+    label: 'Primary color (hex)',
+    default: '#988cff',
+    validate: (v) => (/^#?[0-9a-fA-F]{6}$/.test(v) ? true : Object.assign(() => {}, { message: 'six hex digits — 988cff or #988cff' })),
   })
-
-  let primaryHue
-  let secondaryHue
-  if (primaryChoice === '__random__') {
-    ;[primaryHue, secondaryHue] = randomHuePair()
-  } else if (primaryChoice === '__custom__') {
-    primaryHue = Number(await text({ label: 'Primary hue (0–360)', default: '286' }))
-  } else {
-    primaryHue = NAMED_HUES[primaryChoice].hue
-  }
-
-  const secondaryChoice = await select({
-    label: 'Secondary color',
-    options: [
-      { label: 'suggested', value: '__suggested__', hint: `hue ${suggestSecondaryHue(primaryHue)} — complementary split` },
-      ...namedEntries.map(([k, v]) => ({ label: k, value: k, hint: v.hint })),
-      { label: 'custom hue', value: '__custom__', hint: '0–360 oklch hue number' },
-    ],
-  })
-  if (secondaryChoice === '__suggested__') secondaryHue = suggestSecondaryHue(primaryHue)
-  else if (secondaryChoice === '__custom__') secondaryHue = Number(await text({ label: 'Secondary hue (0–360)', default: String(suggestSecondaryHue(primaryHue)) }))
-  else secondaryHue = NAMED_HUES[secondaryChoice].hue
-
-  a.primaryHue = primaryHue
-  a.secondaryHue = secondaryHue
+  a.primaryHex = primaryHexAnswer.startsWith('#') ? primaryHexAnswer : `#${primaryHexAnswer}`
+  a.primaryHue = hexToOklchHue(a.primaryHex)
+  a.secondaryHue = suggestSecondaryHue(a.primaryHue)
 
   title('Website soul — same anatomy, different skin')
   const soul = await select({
@@ -221,6 +196,14 @@ async function ask() {
     options: Object.entries(SOULS).map(([k, v]) => ({ label: v.label, value: k, hint: v.description })),
   })
   a.soul = soul
+
+  title('Type — the voice of the surface')
+  const FONTS = ['Inter', 'Geist', 'IBM Plex Sans', 'Space Grotesk', 'DM Serif Display', 'Playfair Display']
+  a.font = await select({
+    label: 'Typeface',
+    options: FONTS.map((f) => ({ label: f, value: f, hint: f.includes('Serif') || f.includes('Playfair') ? 'display serif' : 'grotesk' })),
+    defaultIndex: Math.max(0, FONTS.indexOf(SOULS[a.soul].font)),
+  })
 
   title('Master credentials — everything else is derived')
   note('Eleven keys with API powers. From these the platform provisions and')
@@ -297,6 +280,10 @@ async function loadAnswers(file) {
   a.org = a.org || a.slug
   a.domain = a.domain || `${a.slug}.io`
   a.mobileOrg = a.mobileOrg || `com.${a.org}`
+  if (a.primaryHex) {
+    a.primaryHue = hexToOklchHue(a.primaryHex)
+  }
+  a.font = a.font || SOULS[a.soul].font
   const allServices = { website: true, webapp: true, api: true, queue: true, broadcasting: true, cron: true, mobile: true }
   a.services = { ...allServices, ...(a.services || {}) }
   if (!a.services.api && (a.services.queue || a.services.broadcasting || a.services.cron)) {
@@ -352,7 +339,7 @@ function derive(a) {
     APP_ROLES: roles.join('`, `'),
     APP_FEATURES: features.join('`, `'),
     COLOR_MODE_PREFERENCE: SOULS[a.soul].colorMode,
-    SOUL_FONT: SOULS[a.soul].font,
+    SOUL_FONT: a.font || SOULS[a.soul].font,
     MOBILE: a.mobile,
     MOBILE_ORG: a.mobileOrg,
     WEBSITE: services.website,
@@ -462,7 +449,7 @@ async function main() {
   // The scaffolded brand rides on the platform Setting — every
   // surface (webapp injection, mobile boot) reads it at runtime.
   const brand = {
-    font_family: SOULS[a.soul].font,
+    font_family: a.font || SOULS[a.soul].font,
     primary: toHex(primary[500].rgb),
     secondary: toHex(secondary[500].rgb),
     tertiary: toHex(secondary[600].rgb),
