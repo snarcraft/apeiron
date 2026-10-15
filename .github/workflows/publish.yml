@@ -1,15 +1,23 @@
-name: Publish to npm
+name: Publish
 
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - main
+
+# push → auto-bump the patch digit (1.0.x), publish, commit the
+# bump back with [skip ci] so the loop closes. Manual releases
+# (minor/major) publish the version the release carries.
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,8 +28,25 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies
-        run: npm ci
+      # zero dependencies — there is nothing to install and no
+      # lockfile for npm ci to consume.
+
+      - name: Bump patch (main pushes only)
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "apeiron-bot"
+          git config user.email "actions@github.com"
+          node -e '
+            const fs = require("fs")
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"))
+            const [major, minor, patch] = pkg.version.split(".").map(Number)
+            pkg.version = [major, minor, patch + 1].join(".")
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n")
+            console.log("patch bumped -> " + pkg.version)
+          '
+          git add package.json
+          git commit -qm "chore(release): bump patch [skip ci]"
+          git push
 
       - name: Publish to npm
         run: npm publish --access public
