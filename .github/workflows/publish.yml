@@ -46,6 +46,7 @@ jobs:
           '
           git add package.json
           git commit -qm "chore(release): bump patch [skip ci]"
+          git pull --rebase -q origin main
           git push
 
       - name: Publish to npm
