@@ -64,12 +64,27 @@ install:
 	fi
 	$(call log,info,done — make dev when ready)
 
+DEV_PROCS := "make frontend" "make backend" "make websocket" "make worker" "make logs"
+DEV_NAMES := frontend,backend,websocket,worker,logs
+DEV_COLORS := blue,green,yellow,magenta,cyan
+
+# WITH_MOBILE=1 make dev — the flutter app joins the party
+# (needs a connected device/emulator; flutter run is interactive).
+ifeq ($(WITH_MOBILE),1)
+DEV_PROCS += "make mobile"
+DEV_NAMES := $(DEV_NAMES),mobile
+DEV_COLORS := $(DEV_COLORS),white
+endif
+
 dev: banner
-	$(call log,info,starting everything)
+	$(call log,info,starting everything$(if $(filter 1,$(WITH_MOBILE)), + mobile))
+ifeq ($(WITH_MOBILE),1)
+	@command -v flutter >/dev/null 2>&1 || { printf "$(RED)✖ WITH_MOBILE=1 but flutter not found$(NC)\n"; exit 1; }
+endif
 	@npx concurrently -k -s first \
-		-n "frontend,backend,websocket,worker,logs" \
-		-c "blue,green,yellow,magenta,cyan" \
-		"make frontend" "make backend" "make websocket" "make worker" "make logs"
+		-n "$(DEV_NAMES)" \
+		-c "$(DEV_COLORS)" \
+		$(DEV_PROCS)
 
 frontend:
 	$(call log,info,starting webapp (nuxt))
