@@ -16,6 +16,46 @@ export const cloudflare = {
     return zones[0]
   },
 
+  // the account the token belongs to — derived, never asked
+  accountId: async (token) => {
+    const r = await fetch('https://api.cloudflare.com/client/v4/accounts?per_page=1', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!r.ok) throw new Error(`cloudflare account lookup failed: ${r.status}`)
+    const accounts = (await r.json()).result ?? []
+    if (!accounts.length) throw new Error('cloudflare account not found for this token')
+    return accounts[0].id
+  },
+
+  // pages: static hosting on the edge — project + custom domain
+  pagesEnsureProject: async (token, account, name) => {
+    const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+    const existing = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/pages/projects/${name}`, { headers })
+    if (existing.ok) return (await existing.json()).result
+    const created = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/pages/projects`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name, production_branch: 'main' }),
+    })
+    if (!created.ok) throw new Error(`cloudflare pages project create failed: ${created.status}`)
+    return (await created.json()).result
+  },
+
+  pagesEnsureDomain: async (token, account, project, domain) => {
+    const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+    const list = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/pages/projects/${project}/domains`, { headers })
+    if (list.ok && ((await list.json()).result ?? []).some((d) => d.name === domain)) {
+      return { name: domain, status: 'already attached' }
+    }
+    const attached = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/pages/projects/${project}/domains`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name: domain }),
+    })
+    if (!attached.ok) throw new Error(`cloudflare pages domain attach failed: ${attached.status}`)
+    return (await attached.json()).result
+  },
+
   createDnsRecord: async (token, zoneId, { type, name, content, proxied = false, ttl = 1 }) => {
     const r = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, {
       method: 'POST',

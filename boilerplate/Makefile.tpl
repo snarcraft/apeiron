@@ -42,18 +42,23 @@ banner:
 	@printf "  ╰──────────────────────────────────────────────────────────╯\n"
 	@printf "$(NC)"
 
+{{#if API}}
 services:
 	$(call log,info,starting local services (postgres redis minio))
 	@command -v docker >/dev/null 2>&1 || { printf "$(RED)✖ docker not found — install it first: https://docs.docker.com$(NC)\n"; exit 1; }
 	@docker compose version >/dev/null 2>&1 || { printf "$(RED)✖ docker compose not found — install the compose plugin$(NC)\n"; exit 1; }
 	cd server && docker compose -f local.yml up -d
-
+{{/if}}
 install:
 	$(call log,info,install — services, dependencies, migrations, mobile)
+{{#if API}}
 	$(MAKE) services
+{{/if}}
 	pnpm install
+{{#if API}}
 	cd apps/backend && composer install --no-interaction --prefer-dist
 	cd apps/backend && php artisan migrate --seed
+{{/if}}
 	@if [ -d apps/mobile ] && command -v flutter >/dev/null 2>&1; then \
 		printf "$(BLUE)…$(NC) mobile: pub get, platform folders, codegen\n"; \
 		cd apps/mobile && flutter pub get \
@@ -82,8 +87,16 @@ DEV_PROCS += "make websocket"
 DEV_NAMES := $(DEV_NAMES)worker,
 DEV_PROCS += "make worker"
 {{/if}}
+{{#if API}}
 DEV_NAMES := $(DEV_NAMES)logs
 DEV_PROCS += "make logs"
+{{/if}}
+
+# website-only platforms dev on the website itself
+ifeq ($(strip $(DEV_PROCS)),)
+DEV_PROCS := "make web"
+DEV_NAMES := website
+endif
 
 # WITH_MOBILE=1 make dev — the flutter app joins the party
 # (needs a connected device/emulator; flutter run is interactive).

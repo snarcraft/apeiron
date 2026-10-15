@@ -350,6 +350,9 @@ function derive(a) {
     QUEUE: services.queue,
     BROADCASTING: services.broadcasting,
     CRON: services.cron,
+    // edge mode: website-only platforms host statically on
+    // cloudflare pages — no docker, no ec2, no swarm.
+    EDGE: services.website && !services.webapp && !services.api,
   }
 
   for (const step of [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]) {
@@ -361,7 +364,7 @@ function derive(a) {
   tokens.PRIMARY_600_HEX = toHex(primary[600].rgb)
   tokens.SECONDARY_600_HEX = toHex(secondary[600].rgb)
 
-  return { primary, secondary, services, groups, roles, features, matrix, tokens }
+  return { primary, secondary, services, edge: tokens.EDGE, groups, roles, features, matrix, tokens }
 }
 
 // ------------------------------------------------------------
@@ -387,7 +390,7 @@ async function main() {
   a.secrets.REVERB_APP_KEY ||= randomBytes(16).toString('hex')
   a.secrets.REVERB_APP_SECRET ||= randomBytes(16).toString('hex')
 
-  const { primary, secondary, services, groups, roles, features, matrix, tokens } = derive(a)
+  const { primary, secondary, services, edge, groups, roles, features, matrix, tokens } = derive(a)
 
   // palette preview — the wow moment
   title('Generated palette')
@@ -400,9 +403,16 @@ async function main() {
 
   title(`Scaffolding → ${c.bold(target)}`)
   const skip = (rel) => {
+    if (edge) {
+      // static on the edge: no containers, no hosts, no swarm
+      if (rel.startsWith('server/') || rel === 'Dockerfile') return true
+      if (rel === join('.github', 'workflows', 'deploy.yml') || rel === join('.github', 'workflows', 'infrastructure.yml')) return true
+      if (rel === join('.github', 'workflows', 'web.yml')) return true // deploy-edge.yml generates + uploads
+    }
+    if (!edge && (rel === join('.github', 'workflows', 'deploy-edge.yml.tpl') || rel === join('scripts', 'edge.mjs.tpl'))) return true
     if (!services.website && (rel.startsWith('apps/web') || rel === join('.github', 'workflows', 'web.yml'))) return true
     if (!services.webapp && (rel.startsWith('apps/frontend') || rel === join('.github', 'workflows', 'frontend.yml'))) return true
-    if (!services.api && rel.startsWith('apps/backend')) return true
+    if (!services.api && (rel.startsWith('apps/backend') || rel === join('.github', 'workflows', 'backend.yml'))) return true
     if (!services.mobile && (rel.startsWith('apps/mobile') || rel.startsWith('secrets/mobile') || rel === join('.github', 'workflows', 'mobile.yml.tpl'))) return true
     return false
   }
@@ -458,8 +468,10 @@ async function main() {
     brightness: SOULS[a.soul].colorMode === 'dark' ? 'dark' : 'light',
   }
 
-  await g('apps/backend/composer.json', builders.composerJson(ctx))
-  await g('apps/backend/.env.example', builders.backendEnvExample(a))
+  if (services.api) {
+    await g('apps/backend/composer.json', builders.composerJson(ctx))
+    await g('apps/backend/.env.example', builders.backendEnvExample(a))
+  }
   await g('secrets/local.env', builders.secretsEnv({ kind: 'local', ...ctx, values: a.secrets, locales: a.locales }))
   // Staging and production values are minted per environment,
   // pushed to GitHub by bootstrap, then removed from disk —
@@ -487,16 +499,18 @@ async function main() {
   )
 
   // RBAC layer
-  await g('apps/backend/app/Enums/Role.php', rbac.phpRole(roles))
-  await g('apps/backend/app/Enums/Group.php', rbac.phpGroup({ groups, matrix, features }))
-  await g('apps/backend/app/Enums/Feature.php', rbac.phpFeature(features))
-  await g('apps/backend/app/Enums/Action.php', rbac.phpAction())
-  await g('apps/backend/database/seeders/DatabaseSeeder.php', rbac.phpSeeder({ ...ctx, theme: brand }))
-  await g('apps/backend/tests/Unit/RbacTest.php', rbac.phpRbacTest(ctx))
-  for (const locale of a.locales) {
-    await g(`apps/backend/storage/app/lang/${locale}.json`, rbac.langFile({ ...ctx, locale }))
-    if (services.website) {
-      await g(`apps/web/i18n/locales/${locale}.json`, builders.webMessages(locale, a.name.trim()))
+  if (services.api) {
+    await g('apps/backend/app/Enums/Role.php', rbac.phpRole(roles))
+    await g('apps/backend/app/Enums/Group.php', rbac.phpGroup({ groups, matrix, features }))
+    await g('apps/backend/app/Enums/Feature.php', rbac.phpFeature(features))
+    await g('apps/backend/app/Enums/Action.php', rbac.phpAction())
+    await g('apps/backend/database/seeders/DatabaseSeeder.php', rbac.phpSeeder({ ...ctx, theme: brand }))
+    await g('apps/backend/tests/Unit/RbacTest.php', rbac.phpRbacTest(ctx))
+    for (const locale of a.locales) {
+      await g(`apps/backend/storage/app/lang/${locale}.json`, rbac.langFile({ ...ctx, locale }))
+      if (services.website) {
+        await g(`apps/web/i18n/locales/${locale}.json`, builders.webMessages(locale, a.name.trim()))
+      }
     }
   }
   if (services.webapp) {
