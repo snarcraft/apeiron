@@ -180,22 +180,14 @@ node . --answers answers.example.json --out ../my-next-business
 Then, inside the newborn platform:
 
 ```bash
-pnpm install
-cd apps/backend && composer install
-php artisan key:generate && php artisan migrate --seed
-cd ../..
-make services   # postgres + redis + minio
-make dev        # webapp + api + websockets + queues + logs — color-coded, real local domains
+make install   # docker services (checked), pnpm + composer deps, migrate --seed, mobile codegen when present
+make dev       # webapp + api + websockets + queues + logs — color-coded, real local domains
 ```
 
 Mobile, when you want the app too:
 
 ```bash
-cd apps/mobile && flutter pub get
-flutter create --org com.yourorg --project-name yourapp .   # platform folders — once
-cd ../..
-make codegen    # freezed · json · router codegen, watch mode
-make mobile     # the app, against the same backend
+make mobile    # the app, against the same backend (deps + codegen already done by install)
 ```
 
 Push to `main` → staging rolls — the first push provisions everything (AWS, Cloudflare, the host: idempotent on every later one). Push a `v*` tag → production, no prefix domains. Both stores get their builds. Discord pings. That's the whole release train.

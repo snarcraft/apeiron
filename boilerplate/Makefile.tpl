@@ -28,7 +28,7 @@ include $(ENV_FILE)
 export $(shell sed 's/=.*//' $(ENV_FILE))
 endif
 
-.PHONY: dev frontend backend websocket worker logs generate-key deploy test banner services mobile codegen
+.PHONY: dev frontend backend websocket worker logs generate-key deploy test banner services install mobile codegen
 
 banner:
 	@printf "$(BLUE)"
@@ -44,7 +44,25 @@ banner:
 
 services:
 	$(call log,info,starting local services (postgres redis minio))
+	@command -v docker >/dev/null 2>&1 || { printf "$(RED)✖ docker not found — install it first: https://docs.docker.com$(NC)\n"; exit 1; }
+	@docker compose version >/dev/null 2>&1 || { printf "$(RED)✖ docker compose not found — install the compose plugin$(NC)\n"; exit 1; }
 	cd server && docker compose -f local.yml up -d
+
+install:
+	$(call log,info,install — services, dependencies, migrations, mobile)
+	$(MAKE) services
+	pnpm install
+	cd apps/backend && composer install --no-interaction --prefer-dist
+	cd apps/backend && php artisan migrate --seed
+	@if [ -d apps/mobile ] && command -v flutter >/dev/null 2>&1; then \
+		printf "$(BLUE)…$(NC) mobile: pub get, platform folders, codegen\n"; \
+		cd apps/mobile && flutter pub get \
+		&& flutter create --org {{MOBILE_ORG}} --project-name {{APP_NAME}} . >/dev/null \
+		&& flutter pub run build_runner build --delete-conflicting-outputs; \
+	elif [ -d apps/mobile ]; then \
+		printf "$(YELLOW)⚠$(NC) flutter not found — mobile skipped (install flutter, re-run make install)\n"; \
+	fi
+	$(call log,info,done — make dev when ready)
 
 dev: banner
 	$(call log,info,starting everything)
@@ -73,20 +91,9 @@ logs:
 	$(call log,info,tailing application logs)
 	php apps/backend/artisan pail --timeout=0
 
-dev:
-	$(call log,info,starting everything)
-	@npx concurrently -k -s first \
-		-n "frontend,backend,websocket,worker,logs" \
-		-c "blue,green,yellow,magenta,cyan" \
-		"make frontend" "make backend" "make websocket" "make worker" "make logs"
-
 web:
 	$(call log,info,starting website (nuxt))
 	pnpm --filter "@$(APP_NAME)/web" dev --host $(APP_HOST)
-
-services:
-	$(call log,info,starting local services (postgres redis minio))
-	cd server && docker compose -f local.yml up -d
 
 generate-key:
 	$(call log,info,generating APP_KEY)
