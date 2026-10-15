@@ -10,8 +10,8 @@
 //      against this deployment, signing secret pushed to GitHub
 //      and mirrored into secrets/local.env (nobody ever types it)
 //
-//   node scripts/bootstrap.mjs             # staging (default)
-//   node scripts/bootstrap.mjs production  # the day you go live
+//   node scripts/bootstrap.mjs             # staging + production (default)
+//   node scripts/bootstrap.mjs production  # repair a single environment
 //
 // AWS resources (buckets, IAM users, EC2, security groups) stay
 // with `scripts/provision.mjs` — the aws CLI does the signing.
@@ -29,22 +29,21 @@ const readEnv = (file) => {
   return out
 }
 
-const target = process.argv[2] || 'staging'
-const envFile = `secrets/${target}.env`
+const targets = process.argv[2] ? [process.argv[2]] : ['staging', 'production']
 
-for (const file of ['secrets/master.env', envFile]) {
-  if (!existsSync(file)) {
-    if (file === envFile) {
-      console.error(`[fail] ${file} not found — cp secrets/staging.env ${envFile} and adjust, then re-run`)
-    } else {
-      console.error(`[fail] ${file} not found — re-run the factory or fill it by hand`)
-    }
+if (!existsSync('secrets/master.env')) {
+  console.error('[fail] secrets/master.env not found — re-run the factory or fill it by hand')
+  process.exit(1)
+}
+
+for (const t of targets) {
+  if (!existsSync(`secrets/${t}.env`)) {
+    console.error(`[fail] secrets/${t}.env not found — cp secrets/staging.env secrets/${t}.env and adjust, then re-run`)
     process.exit(1)
   }
 }
 
 const master = readEnv('secrets/master.env')
-const env = readEnv(envFile)
 
 // preflight — aws credentials via the signed api: fail fast with
 // one line instead of a provision-time cascade.
@@ -85,34 +84,43 @@ const guard = (run) => {
   }
 }
 
-for (const [k, v] of Object.entries(env)) {
-  if (!v || v.includes('REPLACE_ME')) continue
-  if (SECRET_RE.test(k)) {
-    guard(() => github.secret(k, v, target))
-    console.log(`secret ${target}/${k}`)
-    secrets += 1
-  } else {
-    guard(() => github.variable(k, v, target))
-    console.log(`var    ${target}/${k}`)
-    vars += 1
+for (const target of targets) {
+  const env = readEnv(`secrets/${target}.env`)
+
+  for (const [k, v] of Object.entries(env)) {
+    if (!v || v.includes('REPLACE_ME')) continue
+    if (SECRET_RE.test(k)) {
+      guard(() => github.secret(k, v, target))
+      console.log(`secret ${target}/${k}`)
+      secrets += 1
+    } else {
+      guard(() => github.variable(k, v, target))
+      console.log(`var    ${target}/${k}`)
+      vars += 1
+    }
   }
-}
 
-for (const k of MASTER_APP_KEYS) {
-  if (!master[k]) continue
-  guard(() => github.secret(k, master[k], target))
-  console.log(`secret ${target}/${k} (master)`)
-  secrets += 1
-}
-
-// master keys ride both deploy environments — main pushes roll
-// staging, tags roll production. One bootstrap arms both.
-if (target === 'staging') {
   for (const k of MASTER_APP_KEYS) {
     if (!master[k]) continue
-    guard(() => github.secret(k, master[k], 'production'))
-    console.log(`secret production/${k} (master)`)
+    guard(() => github.secret(k, master[k], target))
+    console.log(`secret ${target}/${k} (master)`)
     secrets += 1
+  }
+
+  // the derived webhook — endpoint registered per environment
+  if (master.STRIPE_SECRET && env.APP_URL && !env.APP_URL.includes('REPLACE_ME')) {
+    try {
+      const url = `${env.APP_URL}/api/stripe/webhook`
+      const webhook = await stripe.ensureWebhookEndpoint(master.STRIPE_SECRET, url)
+      await github.secret('STRIPE_WEBHOOK_SECRET', webhook.secret, target)
+      if (target === 'production') {
+        appendFileSync('secrets/local.env', `\nSTRIPE_WEBHOOK_SECRET=${webhook.secret}\n`)
+      }
+      console.log(`secret ${target}/STRIPE_WEBHOOK_SECRET (derived via stripe api → ${url})`)
+      secrets += 1
+    } catch (error) {
+      console.error(`[warn] ${target}: stripe webhook not derived — ${error.message}`)
+    }
   }
 }
 
@@ -121,20 +129,6 @@ for (const k of STORE_KEYS) {
   guard(() => github.secret(k, master[k], 'mobile'))
   console.log(`secret mobile/${k} (master)`)
   secrets += 1
-}
-
-// the derived webhook — endpoint registered, secret pushed
-if (master.STRIPE_SECRET && env.APP_URL) {
-  try {
-    const url = `${env.APP_URL}/api/stripe/webhook`
-    const webhook = await stripe.ensureWebhookEndpoint(master.STRIPE_SECRET, url)
-    await github.secret('STRIPE_WEBHOOK_SECRET', webhook.secret, target)
-    appendFileSync('secrets/local.env', `\nSTRIPE_WEBHOOK_SECRET=${webhook.secret}\n`)
-    console.log(`secret ${target}/STRIPE_WEBHOOK_SECRET (derived via stripe api → ${url})`)
-    secrets += 1
-  } catch (error) {
-    console.error(`[warn] stripe webhook not derived — ${error.message}`)
-  }
 }
 
 console.log(`\n${vars} variables · ${secrets} secrets — tag a release and CI does the rest.`)

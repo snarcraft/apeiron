@@ -32,7 +32,7 @@ lib/
   `assets/app.json`, fetches the Application document @preResolve)
   → `registerProviders()` (register, then boot) → `runApp`.
 - **Config is two-stage**: gitignored `assets/app.json` (linked
-  from `secrets/mobile/app.json`, materialized from the
+  from `secrets/mobile.json`, materialized from the
   `APP_CONFIG` secret in CI) points at a backend; everything else
   arrives from `GET /`. No `--dart-define`, no flavors.
 - **Theme is server-driven**: colors/font from the Application

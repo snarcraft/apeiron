@@ -17,7 +17,7 @@ flutter run -t lib/debug.dart
 ## Config
 
 `assets/app.json` (gitignored) points at a backend — linked from
-`secrets/mobile/app.json` locally, materialized from the
+`secrets/mobile.json` locally, materialized from the
 `APP_CONFIG` secret in CI:
 
 ```json

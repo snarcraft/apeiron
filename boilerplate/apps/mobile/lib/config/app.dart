@@ -4,7 +4,7 @@ part 'app.freezed.dart';
 part 'app.g.dart';
 
 /// The local bootstrap config — `assets/app.json`, gitignored,
-/// linked from `secrets/mobile/app.json` (exactly like the
+/// linked from `secrets/mobile.json` (exactly like the
 /// backend's `.env` → `secrets/local.env`). CI materializes it
 /// from the APP_CONFIG secret.
 ///

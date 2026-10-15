@@ -16,6 +16,7 @@
 
 import { parseArgs } from 'node:util'
 import { readFile, access } from 'node:fs/promises'
+import { rmSync } from 'node:fs'
 import process from 'node:process'
 import { resolve, dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -424,20 +425,20 @@ async function main() {
 
   await g('apps/backend/composer.json', builders.composerJson(ctx))
   await g('apps/backend/.env.example', builders.backendEnvExample(a))
-  await g('secrets/master.env', builders.masterEnv(a))
   await g('secrets/local.env', builders.secretsEnv({ kind: 'local', ...ctx, values: a.secrets, locales: a.locales }))
-  await g('secrets/staging.env', builders.secretsEnv({
-    kind: 'staging',
-    ...ctx,
-    values: {
-      APP_KEY: a.secrets.APP_KEY,
-      DB_PASSWORD: a.secrets.DB_PASSWORD,
-      REDIS_PASSWORD: a.secrets.REDIS_PASSWORD,
-      REVERB_APP_KEY: a.secrets.REVERB_APP_KEY,
-      REVERB_APP_SECRET: a.secrets.REVERB_APP_SECRET,
-    },
-    locales: a.locales,
-  }))
+  // Staging and production values are minted per environment,
+  // pushed to GitHub by bootstrap, then removed from disk —
+  // environments live in CI; the local pc keeps dev only.
+  const envValues = () => ({
+    APP_KEY: 'base64:' + randomBytes(32).toString('base64'),
+    DB_PASSWORD: randomBytes(18).toString('base64url'),
+    REDIS_PASSWORD: randomBytes(18).toString('base64url'),
+    REVERB_APP_KEY: randomBytes(16).toString('hex'),
+    REVERB_APP_SECRET: randomBytes(16).toString('hex'),
+  })
+  await g('secrets/staging.env', builders.secretsEnv({ kind: 'staging', ...ctx, values: envValues(), locales: a.locales }))
+  await g('secrets/production.env', builders.secretsEnv({ kind: 'production', ...ctx, values: envValues(), locales: a.locales }))
+  await g('secrets/master.env', builders.masterEnv(a))
   await g('docs/SECRETS.md', builders.secretsDoc({ org: a.org, repo: a.repo, ...ctx }))
   await g('README.md', builders.projectReadme({ org: a.org, repo: a.repo, ...ctx }))
   await g('assets/icon.svg', builders.monogramSvg({ letter: a.slug[0], primary500: primary[500], secondary500: secondary[500] }))
@@ -489,8 +490,8 @@ async function main() {
     try {
       const { symlink } = await import('node:fs/promises')
       await mkdir(join(target, 'apps/mobile/assets'), { recursive: true })
-      await symlink('../../../secrets/mobile/app.json', join(target, 'apps/mobile/assets/app.json'), 'file')
-      done('mobile config linked: secrets/mobile/app.json → apps/mobile/assets/app.json')
+      await symlink('../../../secrets/mobile.json', join(target, 'apps/mobile/assets/app.json'), 'file')
+      done('mobile config linked: secrets/mobile.json → apps/mobile/assets/app.json')
     } catch {
       note('mobile config link skipped (already present)')
     }
@@ -552,13 +553,19 @@ async function main() {
       try {
         execSync('node scripts/bootstrap.mjs', { cwd: target, stdio: 'inherit', env: ghEnv })
         done('environments wired — staging, production and mobile carry every secret')
+        // the files did their job: master credentials and per-env
+        // values live in GitHub now — the local pc keeps dev only.
+        for (const file of ['master.env', 'staging.env', 'production.env']) {
+          rmSync(join(target, 'secrets', file), { force: true })
+        }
+        done('secrets/ trimmed — local.env and mobile.json remain, dev only')
       } catch {
-        fail('bootstrap incomplete — re-run node scripts/bootstrap.mjs inside the project (idempotent)')
+        fail('bootstrap incomplete — master.env and the env files stay on disk for a re-run (idempotent)')
       }
     }
   } else {
-    note('no GITHUB_ACCESS_TOKEN — create the repo, push, then run:')
-    note('node scripts/bootstrap.mjs   # sets every GitHub secret from secrets/master.env')
+    note('no GITHUB_ACCESS_TOKEN — after creating the repo, fill secrets/master.env,')
+    note('add a remote, push, then run: node scripts/bootstrap.mjs (idempotent)')
   }
 
   // ----- the birth card -----
