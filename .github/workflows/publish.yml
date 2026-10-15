@@ -3,13 +3,14 @@ name: Publish
 on:
   release:
     types: [published]
-  push:
-    branches:
-      - main
+  # re-enable main-push auto patch publishing when ready:
+  # push:
+  #   branches:
+  #     - main
 
-# push → auto-bump the patch digit (1.0.x), publish, commit the
-# bump back with [skip ci] so the loop closes. Manual releases
-# (minor/major) publish the version the release carries.
+# releases publish the version they carry. The main-push auto
+# bump (patch digit) is parked above — the bump step below is
+# ready and waits for the trigger to return.
 
 permissions:
   contents: write

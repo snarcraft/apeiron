@@ -18,6 +18,7 @@
     },
     "laravel": {
       "command": "laravel-lsp",
+      "args": ["--stdio"],
       "languages": ["php", "blade"]
     }
   },
