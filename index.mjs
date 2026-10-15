@@ -149,6 +149,35 @@ async function ask() {
   // account, home and media are the platform spine — always present.
   a.features = rbac.normalizeIdentifiers(['account', 'home', 'media', ...featurePick, ...extraFeatures.split(',')]).sort()
 
+  title('Services — what ships')
+  note('database, storage and cache ride with the api — never separate choices.')
+  const servicePick = await multiselect({
+    label: 'Services',
+    options: [
+      { label: 'website', value: 'website', hint: 'marketing site — static, cdn', checked: true },
+      { label: 'webapp', value: 'webapp', hint: 'the application — ssr', checked: true },
+      { label: 'api', value: 'api', hint: 'laravel backend — octane', checked: true },
+      { label: 'queue', value: 'queue', hint: 'background jobs — horizon', checked: true },
+      { label: 'broadcasting', value: 'broadcasting', hint: 'websockets — reverb', checked: true },
+      { label: 'cron', value: 'cron', hint: 'the scheduler', checked: true },
+      { label: 'mobile', value: 'mobile', hint: 'the flutter app', checked: true },
+    ],
+    required: true,
+  })
+  a.services = {
+    website: servicePick.includes('website'),
+    webapp: servicePick.includes('webapp'),
+    api: servicePick.includes('api'),
+    queue: servicePick.includes('queue'),
+    broadcasting: servicePick.includes('broadcasting'),
+    cron: servicePick.includes('cron'),
+    mobile: servicePick.includes('mobile'),
+  }
+  if (!a.services.api && (a.services.queue || a.services.broadcasting || a.services.cron)) {
+    note('queue, broadcasting and cron run from the api image — api rides along.')
+    a.services.api = true
+  }
+
   title('Palette — generated, perceptual, yours')
   const namedEntries = Object.entries(NAMED_HUES)
   const primaryChoice = await select({
@@ -214,19 +243,16 @@ async function ask() {
 
   a.gitInit = true
 
-  // Mobile follows the store credentials — bring App Store or
-  // Play keys and the app ships, no question asked. Without them
-  // we ask: dev-only builds are still a legitimate choice.
+  // Mobile follows the services pick — and store credentials
+  // force it on: App Store or Play keys mean the app ships.
   const storeKeys = ['APP_STORE_ISSUER_ID', 'APP_STORE_KEY_ID', 'APP_STORE_PRIVATE_KEY', 'ANDROID_SERVICE_ACCOUNT']
   if (storeKeys.some((key) => a.secrets[key])) {
-    done('store credentials detected — the mobile app ships')
-    a.mobile = true
-  } else {
-    a.mobile = await confirm({
-      label: 'Include the Flutter mobile app? (no store credentials given — dev builds only)',
-      default: true,
-    })
+    if (!a.services.mobile) {
+      done('store credentials detected — the mobile app ships')
+    }
+    a.services.mobile = true
   }
+  a.mobile = a.services.mobile
   if (a.mobile) {
     a.mobileOrg = await text({ label: 'Mobile reverse-domain org', default: `com.${a.org || a.slug}` })
   }
@@ -260,6 +286,7 @@ async function loadAnswers(file) {
     secondaryHue: null,
     soul: 'aurora',
     secrets: {},
+    services: null,
     gitInit: true,
     mobile: true,
     mobileOrg: null,
@@ -270,6 +297,12 @@ async function loadAnswers(file) {
   a.org = a.org || a.slug
   a.domain = a.domain || `${a.slug}.io`
   a.mobileOrg = a.mobileOrg || `com.${a.org}`
+  const allServices = { website: true, webapp: true, api: true, queue: true, broadcasting: true, cron: true, mobile: true }
+  a.services = { ...allServices, ...(a.services || {}) }
+  if (!a.services.api && (a.services.queue || a.services.broadcasting || a.services.cron)) {
+    a.services.api = true
+  }
+  a.mobile = a.services.mobile
   if (a.secondaryHue === null) a.secondaryHue = suggestSecondaryHue(a.primaryHue)
   a.groups = rbac.normalizeIdentifiers(['operator', ...a.groups])
   a.roles = rbac.normalizeIdentifiers(['admin', ...a.roles])
@@ -285,6 +318,7 @@ async function loadAnswers(file) {
 function derive(a) {
   const primary = scale(a.primaryHue)
   const secondary = scale(a.secondaryHue)
+  const services = a.services
   const groups = a.groups
   const roles = a.roles
   const features = a.features
@@ -321,6 +355,12 @@ function derive(a) {
     SOUL_FONT: SOULS[a.soul].font,
     MOBILE: a.mobile,
     MOBILE_ORG: a.mobileOrg,
+    WEBSITE: services.website,
+    WEBAPP: services.webapp,
+    API: services.api,
+    QUEUE: services.queue,
+    BROADCASTING: services.broadcasting,
+    CRON: services.cron,
   }
 
   for (const step of [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]) {
@@ -332,7 +372,7 @@ function derive(a) {
   tokens.PRIMARY_600_HEX = toHex(primary[600].rgb)
   tokens.SECONDARY_600_HEX = toHex(secondary[600].rgb)
 
-  return { primary, secondary, groups, roles, features, matrix, tokens }
+  return { primary, secondary, services, groups, roles, features, matrix, tokens }
 }
 
 // ------------------------------------------------------------
@@ -358,7 +398,7 @@ async function main() {
   a.secrets.REVERB_APP_KEY ||= randomBytes(16).toString('hex')
   a.secrets.REVERB_APP_SECRET ||= randomBytes(16).toString('hex')
 
-  const { primary, secondary, groups, roles, features, matrix, tokens } = derive(a)
+  const { primary, secondary, services, groups, roles, features, matrix, tokens } = derive(a)
 
   // palette preview — the wow moment
   title('Generated palette')
@@ -370,7 +410,13 @@ async function main() {
   const target = resolve(args.out || a.out || join(process.cwd(), a.slug))
 
   title(`Scaffolding → ${c.bold(target)}`)
-  const skipMobile = (rel) => !a.mobile && (rel.startsWith('apps/mobile') || rel.startsWith('secrets/mobile') || rel === join('.github', 'workflows', 'mobile.yml.tpl'))
+  const skip = (rel) => {
+    if (!services.website && (rel.startsWith('apps/web') || rel === join('.github', 'workflows', 'web.yml'))) return true
+    if (!services.webapp && (rel.startsWith('apps/frontend') || rel === join('.github', 'workflows', 'frontend.yml'))) return true
+    if (!services.api && rel.startsWith('apps/backend')) return true
+    if (!services.mobile && (rel.startsWith('apps/mobile') || rel.startsWith('secrets/mobile') || rel === join('.github', 'workflows', 'mobile.yml.tpl'))) return true
+    return false
+  }
   let rendered = 0
   const tick = (rel) => {
     rendered += 1
@@ -380,7 +426,7 @@ async function main() {
     source: join(here, 'boilerplate'),
     target,
     tokens,
-    skip: skipMobile,
+    skip,
     log: tick,
   })
 
@@ -460,29 +506,39 @@ async function main() {
   await g('apps/backend/tests/Unit/RbacTest.php', rbac.phpRbacTest(ctx))
   for (const locale of a.locales) {
     await g(`apps/backend/storage/app/lang/${locale}.json`, rbac.langFile({ ...ctx, locale }))
-    await g(`apps/web/i18n/locales/${locale}.json`, builders.webMessages(locale, a.name.trim()))
+    if (services.website) {
+      await g(`apps/web/i18n/locales/${locale}.json`, builders.webMessages(locale, a.name.trim()))
+    }
   }
-  await g('apps/frontend/app/app.config.ts', rbac.tsAppConfig({ matrix, features }))
-  await g('apps/frontend/app/types/index.d.ts', rbac.tsTypes({ groups, roles, features }))
+  if (services.webapp) {
+    await g('apps/frontend/app/app.config.ts', rbac.tsAppConfig({ matrix, features }))
+    await g('apps/frontend/app/types/index.d.ts', rbac.tsTypes({ groups, roles, features }))
+  }
   done('RBAC enums, matrix, policies, types, seeders & tests generated')
 
-  // souls
+  // souls — each surface wears its skin only when it ships
   const soulSrc = join(here, 'styling', 'souls', a.soul)
   const { copyFile, mkdir } = await import('node:fs/promises')
-  await mkdir(join(target, 'apps/web/app/assets/css'), { recursive: true })
-  await mkdir(join(target, 'apps/frontend/app/assets/css'), { recursive: true })
-  await mkdir(join(target, 'apps/web/app/components/landing'), { recursive: true })
+  const soulFiles = []
+  if (services.website) {
+    await mkdir(join(target, 'apps/web/app/assets/css'), { recursive: true })
+    await mkdir(join(target, 'apps/web/app/components/landing'), { recursive: true })
+    soulFiles.push(
+      [join(soulSrc, 'web.css'), join(target, 'apps/web/app/assets/css/main.css')],
+      [join(soulSrc, 'Hero.vue'), join(target, 'apps/web/app/components/landing/Hero.vue')],
+    )
+  }
+  if (services.webapp) {
+    await mkdir(join(target, 'apps/frontend/app/assets/css'), { recursive: true })
+    soulFiles.push([join(soulSrc, 'app.css'), join(target, 'apps/frontend/app/assets/css/main.css')])
+  }
   const { renderString } = await import('./lib/render.mjs')
-  for (const [from, to] of [
-    [join(soulSrc, 'web.css'), join(target, 'apps/web/app/assets/css/main.css')],
-    [join(soulSrc, 'app.css'), join(target, 'apps/frontend/app/assets/css/main.css')],
-    [join(soulSrc, 'Hero.vue'), join(target, 'apps/web/app/components/landing/Hero.vue')],
-  ]) {
+  for (const [from, to] of soulFiles) {
     const content = renderString(await readFile(from, 'utf8'), tokens)
     await writeGenerated(to, content)
   }
   void copyFile
-  done(`soul "${a.soul}" applied — fonts, tokens, keyframes, hero`)
+  done(`soul "${a.soul}" applied — fonts, tokens, keyframes${services.website ? ', hero' : ''}`)
 
   if (a.mobile) {
     // Link the mobile bootstrap config exactly like the backend
@@ -497,10 +553,11 @@ async function main() {
     }
   }
 
-  // pwa icons copy
-  const pwa = ['favicon.ico', 'pwa-64x64.png', 'pwa-192x192.png', 'pwa-512x512.png', 'maskable-icon-512x512.png']
-  for (const app of ['web', 'frontend']) {
-    await mkdir(join(target, `apps/${app}/public`), { recursive: true })
+  // pwa icons copy — only for surfaces that ship
+  for (const [app, on] of [['web', services.website], ['frontend', services.webapp]]) {
+    if (on) {
+      await mkdir(join(target, `apps/${app}/public`), { recursive: true })
+    }
   }
   note('run `pnpm generate:assets` after install to mint PWA icons from assets/icon.svg')
 

@@ -64,16 +64,32 @@ install:
 	fi
 	$(call log,info,done — make dev when ready)
 
-DEV_PROCS := "make frontend" "make backend" "make websocket" "make worker" "make logs"
-DEV_NAMES := frontend,backend,websocket,worker,logs
-DEV_COLORS := blue,green,yellow,magenta,cyan
+DEV_NAMES :=
+DEV_PROCS :=
+{{#if WEBAPP}}
+DEV_NAMES := frontend,
+DEV_PROCS += "make frontend"
+{{/if}}
+{{#if API}}
+DEV_NAMES := $(DEV_NAMES)backend,
+DEV_PROCS += "make backend"
+{{/if}}
+{{#if BROADCASTING}}
+DEV_NAMES := $(DEV_NAMES)websocket,
+DEV_PROCS += "make websocket"
+{{/if}}
+{{#if QUEUE}}
+DEV_NAMES := $(DEV_NAMES)worker,
+DEV_PROCS += "make worker"
+{{/if}}
+DEV_NAMES := $(DEV_NAMES)logs
+DEV_PROCS += "make logs"
 
 # WITH_MOBILE=1 make dev — the flutter app joins the party
 # (needs a connected device/emulator; flutter run is interactive).
 ifeq ($(WITH_MOBILE),1)
 DEV_PROCS += "make mobile"
 DEV_NAMES := $(DEV_NAMES),mobile
-DEV_COLORS := $(DEV_COLORS),white
 endif
 
 dev: banner
@@ -83,7 +99,6 @@ ifeq ($(WITH_MOBILE),1)
 endif
 	@npx concurrently -k -s first \
 		-n "$(DEV_NAMES)" \
-		-c "$(DEV_COLORS)" \
 		$(DEV_PROCS)
 
 frontend:

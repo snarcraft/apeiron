@@ -258,6 +258,7 @@ x-backend-secrets: &backend-secrets
 
 
 services:
+{{#if WEBSITE}}
   web:
     image: $GH_REGISTRY/$GH_REPOSITORY/web:$GH_BRANCH
     hostname: ${APP_NAME}-web-${APP_ENV}
@@ -267,7 +268,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+{{/if}}
 
+{{#if WEBAPP}}
   frontend:
     image: $GH_REGISTRY/$GH_REPOSITORY/frontend:$GH_BRANCH
     hostname: ${APP_NAME}-frontend-${APP_ENV}
@@ -279,7 +282,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+{{/if}}
 
+{{#if API}}
   backend:
     image: $GH_REGISTRY/$GH_REPOSITORY/backend:$GH_BRANCH
     hostname: ${APP_NAME}-backend-${APP_ENV}
@@ -293,7 +298,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+{{/if}}
 
+{{#if QUEUE}}
   horizon:
     image: $GH_REGISTRY/$GH_REPOSITORY/backend:$GH_BRANCH
     hostname: ${APP_NAME}-horizon-${APP_ENV}
@@ -307,7 +314,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+{{/if}}
 
+{{#if BROADCASTING}}
   reverb:
     image: $GH_REGISTRY/$GH_REPOSITORY/backend:$GH_BRANCH
     hostname: ${APP_NAME}-reverb-${APP_ENV}
@@ -321,7 +330,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+{{/if}}
 
+{{#if CRON}}
   scheduler:
     image: $GH_REGISTRY/$GH_REPOSITORY/backend:$GH_BRANCH
     hostname: ${APP_NAME}-scheduler-${APP_ENV}
@@ -335,6 +346,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+{{/if}}
 
 networks:
   default:
